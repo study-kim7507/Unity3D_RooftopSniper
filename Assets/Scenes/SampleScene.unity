@@ -129,15 +129,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1138641359372500841, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.46
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1138641359372500841, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 11.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1138641359372500841, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.81
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1138641359372500841, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -171,26 +171,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 5311307828379628043, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
-      propertyPath: m_TagString
-      value: MainCamera
-      objectReference: {fileID: 0}
-    - target: {fileID: 7177975484271579970, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
-      propertyPath: recoilAmount
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 7177975484271579970, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
       propertyPath: scopeOverlay
       value: 
       objectReference: {fileID: 309839003}
-    - target: {fileID: 7177975484271579970, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
-      propertyPath: recoilDuration
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7177975484271579970, guid: ad071b40b480113429f9e8f414ebc6c7, type: 3}
-      propertyPath: audioClipAiming
-      value: 
-      objectReference: {fileID: 8300000, guid: afe80d867ef6b8c4fa45b07f1f99533c, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -17,7 +17,6 @@ public class WeaponSniperRifle : MonoBehaviour
     [SerializeField]
     private GameObject scopeOverlay;
 
-
     [Header("Camera")]
     [SerializeField]
     private GameObject maskedCamera;            // 줌 모드시 (저격) 플레이어와 총이 보이지 않도록
@@ -29,16 +28,25 @@ public class WeaponSniperRifle : MonoBehaviour
 
     [Header("Bullet")]
     [SerializeField]
-    private Transform MuzzleTransform;
+    private Transform muzzleTransform;
     [SerializeField]
-    private GameObject BulletPrefab;
+    private GameObject bulletPrefab;
+
+    [Header("Casing")]
+    [SerializeField]
+    private Transform casingSpawnPoint;
+    [SerializeField]
+    private GameObject casingPrefab;
+
+    [Header("Fire Effects")]
+    [SerializeField]
+    private GameObject muzzleFlashEffectPrefab;       // 총구 이펙트
 
     [Header("Recoil")]
     [SerializeField]
-    private float recoilAmount = 1.0f;          // 총기 반동 크기
-    [SerializeField]   
-    private float recoilDuration = 0.1f;        // 총기 반동 지속 시간
-
+    private float recoilAmount = 3.0f;      // 반동의 각도 (조정 가능)
+    [SerializeField]
+    private float recoilDuration = 0.1f;    // 반동 지속 시간
 
     private void Awake()
     {
@@ -48,7 +56,8 @@ public class WeaponSniperRifle : MonoBehaviour
     private void OnEnable()
     {
         // 무기 장착 사운드 재생
-       
+        PlaySound(audioClipTakeOutWeapons);
+
     }
 
     private void PlaySound(AudioClip clip)
@@ -60,6 +69,7 @@ public class WeaponSniperRifle : MonoBehaviour
 
     public void ToggleMode()
     {
+        PlaySound(audioClipAiming);
         if (scopeOverlay.activeSelf) OnUnscoped();
         else StartCoroutine(OnScoped());
     }
@@ -88,44 +98,57 @@ public class WeaponSniperRifle : MonoBehaviour
 
     public void Fire()
     {
-        StartCoroutine(ApplyRecoil());
-
         // 총알이 날아갈 방향을 현재 플레이어가 바라보는 방향으로 (카메라의 전방) 설정
-        Vector3 direction = mainCamera.transform.forward;
-        BulletPrefab.GetComponent<Bullet>().Direction = direction;
+        Vector3 direction = mainCamera.transform.forward;                
         
-        // 총알을 인스턴스화하고 초기 위치를 총구의 위치로 설정
-        GameObject go = Instantiate(BulletPrefab);
-        go.transform.position = MuzzleTransform.position;
+        GameObject bullet = Instantiate(bulletPrefab);
+        bullet.GetComponent<Bullet>().Direction = direction;            // 총알이 날아갈 방향
+        bullet.transform.position = muzzleTransform.position;           // 총알의 초기 위치
+        bullet.transform.rotation = Quaternion.LookRotation(direction); // 총알을 날아갈 방향으로 회전시킴
 
         PlaySound(audioClipFire);   // 총알 발사 사운드 재생
 
+        // 총알 발사 파티클 재생
+        GameObject muzzleFlashEffect = Instantiate(muzzleFlashEffectPrefab, muzzleTransform);
+        muzzleFlashEffect.GetComponent<ParticleSystem>().Play();
+        StartCoroutine(DeactivateMuzzleFlashEffect(muzzleFlashEffect));
+
+        // 탄피 생성
+        GameObject casing = Instantiate(casingPrefab);
+        casing.transform.position = casingSpawnPoint.position;
+
+        // 수직 반동 추가
+        StartCoroutine(Recoil());
     }
 
-    private IEnumerator ApplyRecoil()
+    private IEnumerator Recoil()
     {
-        // TODO: 수정 필요
-        Vector3 originalPosition = Camera.main.transform.localPosition;
-        Vector3 recoilPosition = originalPosition - Camera.main.transform.forward * recoilAmount;
+        // 수직 반동 효과를 위해 카메라를 위로 회전
 
-        float elapsed = 0f;
-        while (elapsed < recoilDuration)
+        // 카메라의 원래 회전을 저장
+        Quaternion originalRotation = mainCamera.transform.localRotation;
+ 
+        float elapsedTime = 0f;
+
+        // 반동 애니메이션
+        while (elapsedTime < recoilDuration)
         {
-            Camera.main.transform.localPosition = Vector3.Lerp(originalPosition, recoilPosition, elapsed / recoilDuration);
-            elapsed += Time.deltaTime;
-            yield return null;
+            float t = elapsedTime / recoilDuration;
+            // 카메라를 위로 회전
+            mainCamera.transform.localRotation = originalRotation * Quaternion.Euler(-recoilAmount * (1 - t), 0, 0);
+            elapsedTime += Time.deltaTime;
+            yield return null; // 다음 프레임까지 대기
         }
 
-        // 원래 위치로 복귀
-        elapsed = 0f;
-        while (elapsed < recoilDuration)
-        {
-            Camera.main.transform.localPosition = Vector3.Lerp(recoilPosition, originalPosition, elapsed / recoilDuration);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        Camera.main.transform.localPosition = originalPosition; // 최종 위치 보정
+        // 원래 회전으로 복귀
+        mainCamera.transform.localRotation = originalRotation;
     }
 
+
+    private IEnumerator DeactivateMuzzleFlashEffect(GameObject muzzleFlashEffect)
+    {
+        yield return new WaitForSeconds(muzzleFlashEffect.GetComponent<ParticleSystem>().main.duration);
+
+        Destroy(muzzleFlashEffect);
+    }
 }

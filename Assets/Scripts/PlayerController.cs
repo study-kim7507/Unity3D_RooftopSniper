@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource;                                    // 사운드 재생 제어
 
     private bool isZoomed = false;
+    private bool canFire = true;                                        // 현재 총을 발사할 수 있는지 (쿨타임)
 
     private void Awake()
     {
@@ -112,18 +113,25 @@ public class PlayerController : MonoBehaviour
 
     private void FireWithProjectile()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && canFire)
         { 
             weapon.GetComponent<WeaponSniperRifle>().Fire();
+
+            // 코루틴을 통한 총 발사 쿨타임을 적용
+            canFire = false;
+            StartCoroutine(ResetFireCooldown());        
 
             if (!isZoomed)
             {
                 playerAnimatorController.Fire();        // 줌 상태가 아니면 총 쏘는 애니메이션 재생
             }
-            else
-            {
-                // TODO: 총기 반동
-            }
         }
+    }
+
+    private IEnumerator ResetFireCooldown()
+    {
+        yield return new WaitForSeconds(3.0f);  // 3초간 쿨타임
+
+        canFire = true;
     }
 }

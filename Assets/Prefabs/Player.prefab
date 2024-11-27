@@ -471,9 +471,9 @@ GameObject:
   - component: {fileID: 6920843915716246820}
   - component: {fileID: 8896137364635110194}
   - component: {fileID: 1883872812951571370}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1040,6 +1040,37 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &4139162836358970412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5590045876259122495}
+  m_Layer: 6
+  m_Name: CasingSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5590045876259122495
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4139162836358970412}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.25881904, y: -0, z: 2.8421713e-14, w: 0.9659259}
+  m_LocalPosition: {x: 0.0345, y: 0.0751, z: 0.0195}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8670733419308848110}
+  m_LocalEulerAnglesHint: {x: -30, y: 0, z: 0}
 --- !u!1 &4281134329006053529
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,6 +1103,37 @@ Transform:
   - {fileID: 4562270224700831608}
   m_Father: {fileID: 1479520866934778772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4320656469839155238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5707430355975596487}
+  m_Layer: 6
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5707430355975596487
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320656469839155238}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.25881898, y: -0, z: 5.6843413e-13, w: 0.9659258}
+  m_LocalPosition: {x: 0, y: 0.635, z: 0.898}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8670733419308848110}
+  m_LocalEulerAnglesHint: {x: -30, y: 0, z: 0}
 --- !u!1 &4430968851430711006
 GameObject:
   m_ObjectHideFlags: 0
@@ -1308,7 +1370,7 @@ GameObject:
   - component: {fileID: 8939489967200289618}
   m_Layer: 0
   m_Name: Main Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1639,13 +1701,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClipTakeOutWeapons: {fileID: 0}
+  audioClipAiming: {fileID: 8300000, guid: afe80d867ef6b8c4fa45b07f1f99533c, type: 3}
   audioClipFire: {fileID: 8300000, guid: c1bd91cf7c20534478c9b9c5d69d1732, type: 3}
   scopeOverlay: {fileID: 0}
   maskedCamera: {fileID: 4044910147792257284}
   mainCamera: {fileID: 7442065206845944297}
   scopedFOV: 15
-  MuzzleTransform: {fileID: 7876347225886974183}
-  BulletPrefab: {fileID: 4971291269620334185, guid: 8b89db881a7215642bd096e236cec542, type: 3}
+  muzzleTransform: {fileID: 5707430355975596487}
+  bulletPrefab: {fileID: 5362721006924918389, guid: db1b4adf8b047474892b9336dc8bd122, type: 3}
+  casingSpawnPoint: {fileID: 5590045876259122495}
+  casingPrefab: {fileID: 6390378790107795311, guid: 050032e5a7c965b4d87bfe021c79ee04, type: 3}
+  muzzleFlashEffectPrefab: {fileID: 3688851158861589615, guid: 273b18f1feb80674ebd04f391fb21960, type: 3}
+  recoilAmount: 3
+  recoilDuration: 0.15
 --- !u!82 &3176792524066534760
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2035,6 +2103,8 @@ Transform:
   - {fileID: 2289429113120567021}
   - {fileID: 8977281144269006490}
   - {fileID: 5538393822019469153}
+  - {fileID: 5707430355975596487}
+  - {fileID: 5590045876259122495}
   m_Father: {fileID: 1622492909851027965}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6292270734413864134
