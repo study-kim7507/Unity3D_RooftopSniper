@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ public class PlayerController : MonoBehaviour
     private PlayerAnimatorController playerAnimatorController;          // 애니메이션 재생 제어
     private AudioSource audioSource;                                    // 사운드 재생 제어
 
+    private bool isZoomed = false;
+
     private void Awake()
     {
         // 마우스 커서를 보이지 않게 설정
@@ -42,6 +45,7 @@ public class PlayerController : MonoBehaviour
         UpdateSnipingStatus();
         UpdateRotate();
         UpdateMove();
+        FireWithProjectile();
     }
 
     // 마우스 입력 (캐릭터 회전을 담당)
@@ -100,9 +104,26 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
+            isZoomed = !isZoomed;
             playerAnimatorController.ToggleSniperMode();
             weapon.GetComponent<WeaponSniperRifle>().ToggleMode();
         }
     }
-    
+
+    private void FireWithProjectile()
+    {
+        if (Input.GetMouseButtonDown(0))
+        { 
+            weapon.GetComponent<WeaponSniperRifle>().Fire();
+
+            if (!isZoomed)
+            {
+                playerAnimatorController.Fire();        // 줌 상태가 아니면 총 쏘는 애니메이션 재생
+            }
+            else
+            {
+                // TODO: 총기 반동
+            }
+        }
+    }
 }

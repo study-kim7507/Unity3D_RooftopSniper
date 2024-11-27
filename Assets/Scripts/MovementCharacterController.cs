@@ -13,7 +13,6 @@ public class MovementCharacterController : MonoBehaviour
         get => moveSpeed;
     }
 
-
     private CharacterController characterController;    // 플레이어 이동 제어를 위한 컴포넌트
 
     private void Awake()

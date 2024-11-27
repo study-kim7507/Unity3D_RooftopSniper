@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerAnimatorController : MonoBehaviour
@@ -27,5 +28,10 @@ public class PlayerAnimatorController : MonoBehaviour
         {
             animator.SetTrigger("ZoomOut");
         }
+    }
+
+    public void Fire()
+    {
+        animator.SetTrigger("Fire");
     }
 }
