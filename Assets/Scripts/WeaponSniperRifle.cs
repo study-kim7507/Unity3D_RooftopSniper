@@ -48,6 +48,11 @@ public class WeaponSniperRifle : MonoBehaviour
     [SerializeField]
     private float recoilDuration = 0.1f;    // 반동 지속 시간
 
+    private bool isScoped = false;
+    private Coroutine scopedBreathetheCoroutine;
+    private Quaternion baseRotation;
+    private bool isRecoiling = false;
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -81,6 +86,14 @@ public class WeaponSniperRifle : MonoBehaviour
 
         mainCamera.fieldOfView = normalFOV;
         maskedCamera.GetComponent<Camera>().fieldOfView = normalFOV;
+
+        isScoped = false;
+
+        if (scopedBreathetheCoroutine != null)
+        {
+            StopCoroutine(scopedBreathetheCoroutine);
+            scopedBreathetheCoroutine = null;
+        }
     }
 
     private IEnumerator OnScoped()
@@ -94,21 +107,27 @@ public class WeaponSniperRifle : MonoBehaviour
 
         mainCamera.fieldOfView = scopedFOV;
         maskedCamera.GetComponent<Camera>().fieldOfView = scopedFOV;
+
+        isScoped = true;
+
+        if (scopedBreathetheCoroutine == null)
+        {
+            scopedBreathetheCoroutine = StartCoroutine(ScopedBreathing());
+        }
     }
 
     public void Fire()
     {
-        // 총알이 날아갈 방향을 현재 플레이어가 바라보는 방향으로 (카메라의 전방) 설정
-        Vector3 direction = mainCamera.transform.forward;                
-        
+        // 총알 생성 및 발사
+        Vector3 direction = mainCamera.transform.forward;
         GameObject bullet = Instantiate(bulletPrefab);
-        bullet.GetComponent<Bullet>().Direction = direction;            // 총알이 날아갈 방향
-        bullet.transform.position = muzzleTransform.position;           // 총알의 초기 위치
-        bullet.transform.rotation = Quaternion.LookRotation(direction); // 총알을 날아갈 방향으로 회전시킴
+        bullet.GetComponent<Bullet>().Direction = direction;
+        bullet.transform.position = muzzleTransform.position;
+        bullet.transform.rotation = Quaternion.LookRotation(direction);
 
-        PlaySound(audioClipFire);   // 총알 발사 사운드 재생
+        PlaySound(audioClipFire);
 
-        // 총알 발사 파티클 재생
+        // 총알 발사 이펙트
         GameObject muzzleFlashEffect = Instantiate(muzzleFlashEffectPrefab, muzzleTransform);
         muzzleFlashEffect.GetComponent<ParticleSystem>().Play();
         StartCoroutine(DeactivateMuzzleFlashEffect(muzzleFlashEffect));
@@ -117,33 +136,65 @@ public class WeaponSniperRifle : MonoBehaviour
         GameObject casing = Instantiate(casingPrefab);
         casing.transform.position = casingSpawnPoint.position;
 
-        // 수직 반동 추가
+        // 기준 회전값 업데이트
+        baseRotation = mainCamera.transform.localRotation;
+
+        // Recoil 실행
         StartCoroutine(Recoil());
+    }
+
+    private IEnumerator ScopedBreathing()
+    {
+        float baseAmplitude = 0.3f;
+        float maxAmplitude = 1.0f;
+        float frequency = 1.0f;
+        float amplitudeIncreaseRate = 0.1f;
+
+        float currentAmplitude = baseAmplitude;
+
+        while (isScoped)
+        {
+            // Recoil이 진행 중이면 흔들림을 적용하지 않음
+            if (!isRecoiling)
+            {
+                currentAmplitude = Mathf.Min(currentAmplitude + amplitudeIncreaseRate * Time.deltaTime, maxAmplitude);
+
+                // 흔들림 효과 적용
+                float pitchOffset = Mathf.Sin(Time.time * frequency) * currentAmplitude;
+
+                mainCamera.transform.localRotation = baseRotation * Quaternion.Euler(pitchOffset, 0, 0);
+            }
+
+            yield return null;
+        }
+
+        // 스코프 해제 시 기본 회전값으로 복구
+        mainCamera.transform.localRotation = baseRotation;
     }
 
     private IEnumerator Recoil()
     {
-        // 수직 반동 효과를 위해 카메라를 위로 회전
+        isRecoiling = true; // Recoil 동작 중 플래그 설정
+        Quaternion recoilStartRotation = baseRotation; // 기준 회전값 저장
 
-        // 카메라의 원래 회전을 저장
-        Quaternion originalRotation = mainCamera.transform.localRotation;
- 
         float elapsedTime = 0f;
 
         // 반동 애니메이션
         while (elapsedTime < recoilDuration)
         {
             float t = elapsedTime / recoilDuration;
-            // 카메라를 위로 회전
-            mainCamera.transform.localRotation = originalRotation * Quaternion.Euler(-recoilAmount * (1 - t), 0, 0);
+
+            // 반동 효과: 기준 회전값에서 위로 이동
+            mainCamera.transform.localRotation = recoilStartRotation * Quaternion.Euler(-recoilAmount * (1 - t), 0, 0);
+
             elapsedTime += Time.deltaTime;
-            yield return null; // 다음 프레임까지 대기
+            yield return null;
         }
 
-        // 원래 회전으로 복귀
-        mainCamera.transform.localRotation = originalRotation;
+        // 반동 완료 후 기준 회전값으로 복구
+        mainCamera.transform.localRotation = recoilStartRotation;
+        isRecoiling = false; // Recoil 종료 플래그 해제
     }
-
 
     private IEnumerator DeactivateMuzzleFlashEffect(GameObject muzzleFlashEffect)
     {

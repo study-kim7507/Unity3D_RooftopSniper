@@ -6,6 +6,8 @@ TagManager:
   tags:
   - FxTemporaire
   - Casing
+  - Bullet
+  - Target
   layers:
   - Default
   - TransparentFX
@@ -15,9 +17,9 @@ TagManager:
   - UI
   - Player
   - Casing
-  - 
-  - 
-  - 
+  - Target
+  - Ground
+  - Building
   - 
   - 
   - 
