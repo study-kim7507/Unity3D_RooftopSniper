@@ -6,19 +6,13 @@ public class WeaponSniperRifle : MonoBehaviour
 {
     [Header("Audio Clips")]
     [SerializeField]
-    private AudioClip audioClipTakeOutWeapons;  // 무기 장착 사운드
-    [SerializeField]
     private AudioClip audioClipAiming;          // 무기 조준 / 조준 해제 사운드
     [SerializeField]
     private AudioClip audioClipFire;            // 총알 발사 사운드
 
     private AudioSource audioSource;            // 사운드 재생 컴포넌트
 
-    [Header("Scope Overlay")]
-    [SerializeField]
-    private GameObject scopeOverlay;
-
-    [Header("Camera")]
+    [Header("Camera Settings")]
     [SerializeField]
     private GameObject maskedCamera;            // 줌 모드시 (저격) 플레이어와 총이 보이지 않도록
     [SerializeField]
@@ -27,13 +21,17 @@ public class WeaponSniperRifle : MonoBehaviour
     private float scopedFOV = 10.0f;
     private float normalFOV;
 
-    [Header("Bullet")]
+    [Header("Scope Overlay")]
+    [SerializeField]
+    private GameObject scopeOverlay;
+
+    [Header("Bullet Settings")]
     [SerializeField]
     private Transform muzzleTransform;
     [SerializeField]
     private GameObject bulletPrefab;
 
-    [Header("Casing")]
+    [Header("Casing Settings")]
     [SerializeField]
     private Transform casingSpawnPoint;
     [SerializeField]
@@ -43,11 +41,11 @@ public class WeaponSniperRifle : MonoBehaviour
     [SerializeField]
     private GameObject muzzleFlashEffectPrefab;       // 총구 이펙트
 
-    [Header("Recoil")]
+    [Header("Recoil Settings")]
     [SerializeField]
-    private float recoilAmount = 3.0f;      // 반동의 각도 (조정 가능)
+    private float recoilAmount = 3.0f;                // 반동의 각도 (조정 가능)
     [SerializeField]
-    private float recoilDuration = 0.1f;    // 반동 지속 시간
+    private float recoilDuration = 0.1f;              // 반동 지속 시간
 
     private bool isScoped = false;
     private Coroutine scopedBreathetheCoroutine;
@@ -59,22 +57,9 @@ public class WeaponSniperRifle : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    private void OnEnable()
-    {
-        // 무기 장착 사운드 재생
-        // PlaySound(audioClipTakeOutWeapons);
-
-    }
-
-    private void PlaySound(AudioClip clip)
-    {
-        // audioSource.Stop();                  // 기존에 재생중인 사운드 정지,
-        audioSource.PlayOneShot(clip);          // 사운드 재생
-    }
-
     public void ToggleMode()
     {
-        PlaySound(audioClipAiming);
+        audioSource.PlayOneShot(audioClipAiming);
         if (scopeOverlay.activeSelf) OnUnscoped();
         else OnScoped();
     }
@@ -108,6 +93,9 @@ public class WeaponSniperRifle : MonoBehaviour
 
         isScoped = true;
 
+        // 스코프 모드에 들어갈 때 기준 회전값을 현재 카메라 회전값으로 설정
+        baseRotation = mainCamera.transform.localRotation;
+
         if (scopedBreathetheCoroutine == null)
         {
             scopedBreathetheCoroutine = StartCoroutine(ScopedBreathing());
@@ -138,9 +126,6 @@ public class WeaponSniperRifle : MonoBehaviour
             hitPosition = hit.point;
         }
         
-        /* For Debugging */
-        Debug.DrawLine(transform.position, hit.point, Color.red, 3.0f);
-        
         return hitPosition;
     }
 
@@ -154,8 +139,8 @@ public class WeaponSniperRifle : MonoBehaviour
         Vector3 direction = (bulletHitPosition - bullet.transform.position).normalized;
         bullet.GetComponent<Bullet>().Direction = direction;
         bullet.transform.rotation = Quaternion.LookRotation(direction);
-        
-        PlaySound(audioClipFire);
+
+        audioSource.PlayOneShot(audioClipFire);
 
         // 총알 발사 이펙트
         GameObject muzzleFlashEffect = Instantiate(muzzleFlashEffectPrefab, muzzleTransform);

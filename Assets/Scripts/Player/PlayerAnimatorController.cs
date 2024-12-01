@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerAnimatorController : MonoBehaviour
 {
     private Animator animator;
-  
     private void Awake()
     {
         // "Player" 오브젝트 기준으로 자식 오브젝트인 

@@ -1,22 +1,27 @@
 using UnityEngine;
 using System.Collections;
 
-public class PoliceController : MonoBehaviour
+public class PoliceController : PersonController
 {
+    [Header("Police Mesh")]
     [SerializeField]
     private Mesh policeMesh;
 
+    [Header("Police Camera")]
     [SerializeField]
     private GameObject policeCamera;
 
-    private Renderer[] renderers;
+    private PoliceAnimatorController policeAnimatorController;
+    private PoliceMovementController policeMovementController;
 
-    private void Start()
+    protected override void Awake()
     {
-        renderers = GetComponentsInChildren<Renderer>();
+        base.Awake();
 
+        NavMeshSurface = GameManager.Instance.NavMeshSurfaceForPolice;
+        gameObject.transform.position = GetRandomPositionInNavMeshSurface();
     }
-    
+
     // 위장 경찰의 등장
     public IEnumerator CamouflagePoliceAppearRoutine()
     {

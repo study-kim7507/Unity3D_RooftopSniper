@@ -3,8 +3,10 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovementController : MonoBehaviour
 {
+    [Header("Move Speed")]
     [SerializeField]
     private float moveSpeed;    // 이동속도
+
     private Vector3 moveForce;  // 이동 힘
 
     public float MoveSpeed
@@ -22,6 +24,8 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.IsBulletCameraActive || GameManager.Instance.IsPoliceCameraActive) return;
+
         // 1초당 moveForce 속력으로 이동
         characterController.Move(moveForce * Time.deltaTime);
     }

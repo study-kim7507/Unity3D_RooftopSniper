@@ -3,10 +3,13 @@ using UnityEngine;
 
 public class Casing : MonoBehaviour
 {
+    [Header("Casing Properties")]
     [SerializeField]
     private float lifeTime = 5.0f;      // 탄피가 생성된 후 얼마 뒤에 사라질 것인지
     [SerializeField]
     private float casingSpin = 1.0f;    // 탄피가 회전하는 속력 계수
+
+    [Header("Sound Effects")]
     [SerializeField]
     private AudioClip[] audioClips;     // 탄피가 부딪혔을 때 재생되는 사운드
 

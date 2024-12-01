@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool IsZoomed = false;
+
     [Header("Input KeyCodes")]
     [SerializeField]
     private KeyCode keyCodeRun = KeyCode.LeftShift;                     // 달리기 키
@@ -24,7 +26,6 @@ public class PlayerController : MonoBehaviour
     private PlayerAnimatorController playerAnimatorController;          // 애니메이션 재생 제어
     private AudioSource audioSource;                                    // 사운드 재생 제어
 
-    public bool IsZoomed = false;
     private bool canFire = true;                                        // 현재 총을 발사할 수 있는지 (쿨타임)
 
     private void Awake()
@@ -43,7 +44,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.IsBulletCameraActive || GameManager.Instance.IsPoliceCameraActive) return;
+        if (GameManager.Instance.IsBulletCameraActive || GameManager.Instance.IsPoliceCameraActive)
+        {
+            audioSource.Stop();
+            return;
+        }
+
         UpdateSnipingStatus();
         UpdateRotate();
         UpdateMove();

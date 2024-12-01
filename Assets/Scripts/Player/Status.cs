@@ -9,6 +9,5 @@ public class Status : MonoBehaviour
     private float runSpeed;
 
     public float WalkSpeed => walkSpeed;
-    public float RunSpeed => runSpeed; 
-
+    public float RunSpeed => runSpeed;
 }
