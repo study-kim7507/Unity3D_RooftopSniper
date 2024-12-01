@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.Build.Content;
 using UnityEngine;
 
 public class WeaponSniperRifle : MonoBehaviour
@@ -23,7 +24,7 @@ public class WeaponSniperRifle : MonoBehaviour
     [SerializeField]
     private Camera mainCamera;
     [SerializeField]
-    private float scopedFOV = 15.0f;
+    private float scopedFOV = 10.0f;
     private float normalFOV;
 
     [Header("Bullet")]
@@ -61,27 +62,26 @@ public class WeaponSniperRifle : MonoBehaviour
     private void OnEnable()
     {
         // 무기 장착 사운드 재생
-        PlaySound(audioClipTakeOutWeapons);
+        // PlaySound(audioClipTakeOutWeapons);
 
     }
 
     private void PlaySound(AudioClip clip)
     {
-        audioSource.Stop();         // 기존에 재생중인 사운드 정지,
-        audioSource.clip = clip;    // 새로운 사운드 clip으로 교체
-        audioSource.Play();         // 사운드 재생
+        // audioSource.Stop();                  // 기존에 재생중인 사운드 정지,
+        audioSource.PlayOneShot(clip);          // 사운드 재생
     }
 
     public void ToggleMode()
     {
         PlaySound(audioClipAiming);
         if (scopeOverlay.activeSelf) OnUnscoped();
-        else StartCoroutine(OnScoped());
+        else OnScoped();
     }
 
     private void OnUnscoped()
     {
-        scopeOverlay.SetActive(false);
+        ToggleScopeOverlay();
         maskedCamera.SetActive(false);
 
         mainCamera.fieldOfView = normalFOV;
@@ -96,11 +96,9 @@ public class WeaponSniperRifle : MonoBehaviour
         }
     }
 
-    private IEnumerator OnScoped()
+    private void OnScoped()
     {
-        yield return new WaitForSeconds(0.45f);
-
-        scopeOverlay.SetActive(true);
+        ToggleScopeOverlay();
         maskedCamera.SetActive(true);
 
         normalFOV = mainCamera.fieldOfView;
@@ -116,15 +114,47 @@ public class WeaponSniperRifle : MonoBehaviour
         }
     }
 
+    public void SetFOV(bool isWheelUp)
+    {
+        float currentFOV = maskedCamera.GetComponent<Camera>().fieldOfView;
+        currentFOV = isWheelUp ? Mathf.Clamp(--currentFOV, 0.0f, normalFOV) : Mathf.Clamp(++currentFOV, 0.0f, normalFOV);
+        maskedCamera.GetComponent<Camera>().fieldOfView = currentFOV;
+    }
+
+    private Vector3 CalculateBulletHitPosition()
+    {
+        float bulletSpeed = bulletPrefab.GetComponent<Bullet>().Speed;
+        float bulletLifeTime = bulletPrefab.GetComponent<Bullet>().LifeTime;
+
+        float maxDistance = bulletSpeed * bulletLifeTime;   // 거리 = 속력 * 시간, 총알이 생성되는 지점에서 최대로 날아갈 수 있는 거리
+
+        RaycastHit hit;
+        Ray r = mainCamera.ViewportPointToRay(Vector3.one / 2);
+
+        Vector3 hitPosition = r.origin + r.direction * maxDistance;
+
+        if (Physics.Raycast(r, out hit, maxDistance))
+        {
+            hitPosition = hit.point;
+        }
+        
+        /* For Debugging */
+        Debug.DrawLine(transform.position, hit.point, Color.red, 3.0f);
+        
+        return hitPosition;
+    }
+
     public void Fire()
     {
-        // 총알 생성 및 발사
-        Vector3 direction = mainCamera.transform.forward;
         GameObject bullet = Instantiate(bulletPrefab);
-        bullet.GetComponent<Bullet>().Direction = direction;
-        bullet.transform.position = muzzleTransform.position;
-        bullet.transform.rotation = Quaternion.LookRotation(direction);
+        bullet.transform.position = muzzleTransform.position;   // 총알의 초기 생성 지점의 위치
 
+        // 총알의 초기 생성 지점의 위치와 총알의 충돌 지점의 위치를 기반으로 총알이 날아갈 방향을 계산하여 설정
+        Vector3 bulletHitPosition = CalculateBulletHitPosition();
+        Vector3 direction = (bulletHitPosition - bullet.transform.position).normalized;
+        bullet.GetComponent<Bullet>().Direction = direction;
+        bullet.transform.rotation = Quaternion.LookRotation(direction);
+        
         PlaySound(audioClipFire);
 
         // 총알 발사 이펙트
@@ -201,5 +231,10 @@ public class WeaponSniperRifle : MonoBehaviour
         yield return new WaitForSeconds(muzzleFlashEffect.GetComponent<ParticleSystem>().main.duration);
 
         Destroy(muzzleFlashEffect);
+    }
+
+    public void ToggleScopeOverlay()
+    {
+        scopeOverlay.gameObject.SetActive(!scopeOverlay.gameObject.activeSelf);
     }
 }

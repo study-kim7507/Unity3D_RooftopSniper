@@ -8,6 +8,7 @@ TagManager:
   - Casing
   - Bullet
   - Target
+  - Police
   layers:
   - Default
   - TransparentFX

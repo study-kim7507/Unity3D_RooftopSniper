@@ -18,18 +18,6 @@ public class PlayerAnimatorController : MonoBehaviour
         get => animator.GetFloat("MovementSpeed");
     }
 
-    public void ToggleSniperMode()
-    {
-        if (!animator.GetCurrentAnimatorStateInfo(0).IsName("scoped@sniper_02"))
-        {
-            animator.SetTrigger("ZoomIn");
-        }
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("scoped@sniper_02"))
-        {
-            animator.SetTrigger("ZoomOut");
-        }
-    }
-
     public void Fire()
     {
         animator.SetTrigger("Fire");

@@ -19,12 +19,12 @@ public class PlayerController : MonoBehaviour
     private GameObject weapon;
 
     private RotateToMouse rotateToMouse;                                // 마우스 이동으로 카메라 회전
-    private MovementCharacterController movementCharacterController;    // 키보드 입력으로 플레이어 이동, 점프 등
+    private PlayerMovementController playerMovementController;          // 키보드 입력으로 플레이어 이동, 점프 등
     private Status status;                                              // 이동속도 등의 플레이어 정보 
     private PlayerAnimatorController playerAnimatorController;          // 애니메이션 재생 제어
     private AudioSource audioSource;                                    // 사운드 재생 제어
 
-    private bool isZoomed = false;
+    public bool IsZoomed = false;
     private bool canFire = true;                                        // 현재 총을 발사할 수 있는지 (쿨타임)
 
     private void Awake()
@@ -33,8 +33,8 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        rotateToMouse = GetComponent<RotateToMouse>(); 
-        movementCharacterController = GetComponent<MovementCharacterController>();
+        rotateToMouse = GetComponent<RotateToMouse>();
+        playerMovementController = GetComponent<PlayerMovementController>();
         status = GetComponent<Status>();
         playerAnimatorController = GetComponent<PlayerAnimatorController>();
         audioSource = GetComponent<AudioSource>();
@@ -43,10 +43,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.IsBulletCameraActive || GameManager.Instance.IsPoliceCameraActive) return;
         UpdateSnipingStatus();
         UpdateRotate();
         UpdateMove();
         FireWithProjectile();
+        UpdateWeaponFOV();
     }
 
     // 마우스 입력 (캐릭터 회전을 담당)
@@ -72,7 +74,7 @@ public class PlayerController : MonoBehaviour
             // 옆이나 뒤로 이동할 때는 달릴 수 없도록
             if (z > 0) isRun = Input.GetKey(keyCodeRun);
 
-            movementCharacterController.MoveSpeed = isRun == true ? status.RunSpeed : status.WalkSpeed;
+            playerMovementController.MoveSpeed = isRun == true ? status.RunSpeed : status.WalkSpeed;
             playerAnimatorController.MoveSpeed = isRun == true ? 1.0f : 0.5f;       // animator의 파라미터 값을 조절하여 Blend 애니메이션 재생 조절
             audioSource.clip = isRun == true ? audioClipRun : audioClipWalk;
 
@@ -87,7 +89,7 @@ public class PlayerController : MonoBehaviour
         // 제자리에 멈춰 있을 때
         else
         {
-            movementCharacterController.MoveSpeed = 0.0f;
+            playerMovementController.MoveSpeed = 0.0f;
             playerAnimatorController.MoveSpeed = 0.0f;
 
             // 멈췄을 때 사운드가 재생중이면 정지
@@ -97,7 +99,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        movementCharacterController.MoveTo(new Vector3(x, 0, z));
+        playerMovementController.MoveTo(new Vector3(x, 0, z));
     }
 
     // 플레이어의 저격 상태 업데이트
@@ -105,8 +107,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            isZoomed = !isZoomed;
-            playerAnimatorController.ToggleSniperMode();
+            IsZoomed = !IsZoomed;
             weapon.GetComponent<WeaponSniperRifle>().ToggleMode();
         }
     }
@@ -121,7 +122,7 @@ public class PlayerController : MonoBehaviour
             canFire = false;
             StartCoroutine(ResetFireCooldown());        
 
-            if (!isZoomed)
+            if (!IsZoomed)
             {
                 playerAnimatorController.Fire();        // 줌 상태가 아니면 총 쏘는 애니메이션 재생
             }
@@ -130,8 +131,23 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator ResetFireCooldown()
     {
-        yield return new WaitForSeconds(3.0f);  // 3초간 쿨타임
+        yield return new WaitForSecondsRealtime(3.0f);
 
         canFire = true;
+    }
+
+    private void UpdateWeaponFOV()
+    {
+        float wheelInput = Input.GetAxis("Mouse ScrollWheel");
+        if (wheelInput > 0)
+        {
+            // 휠 업
+            weapon.GetComponent<WeaponSniperRifle>().SetFOV(true);
+        }
+        else if (wheelInput < 0)
+        {
+            // 휠 다운
+            weapon.GetComponent<WeaponSniperRifle>().SetFOV(false);
+        }
     }
 }

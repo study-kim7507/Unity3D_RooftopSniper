@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class MovementCharacterController : MonoBehaviour
+public class PlayerMovementController : MonoBehaviour
 {
     [SerializeField]
     private float moveSpeed;    // 이동속도
