@@ -1,8 +1,14 @@
 /*
- * TODO: 사람, 경찰 다양한 색상
- * TODO: 네브 메시 내에서의 이동 및 애니메이션
- *        - 발각 시 사람들은 도망가고, 위장 경찰은 현재 내가 있는 건물을 향해 이동하도록
- * TODO: 아무런 사람이 없는 상태에서 새로운 사람이 등장하면 타겟으로 지정되지 않는 문제 수정해야함
+ * 
+ * TODO : Target(People) 초기 스폰 위치 설정 문제 해결 필요(NavMeshSurface, NavMeshAgent -> AreaMask 문제)
+ *        -> GetRandomPositionInNavMeshSurface 함수 수정 필요 
+ * TODO : NavMeshAgent의 Destination에 다른 오브젝트가 존재하면 새로운 랜덤 위치를 생성하도록
+ * TODO : Police 경찰의 초기 스폰 위치 설정 문제 해결 필요
+ * TODO : 경찰이 GoalPoint에 도착했을 때, 플레이어 목숨을 감소시키고 새로운 위장 경찰 등장 시키도록
+ * TODO : 이미 발각된 상태에서 또 다시 발각되는 문제 해결 필요
+ * TODO : 추가적인 Asset 임포트 필요
+ *        -> 다양한 사람, 다양한 Idle, Walk, Run 애니메이션
+ * 
  */
 using NUnit.Framework;
 using System;
@@ -16,6 +22,8 @@ using UnityEngine.WSA;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public static event Action TargetRunAway;
+    public static event Action PoliceChasePlayer;
 
     public List<NavMeshSurface> NavMeshSurfacesForPeople;
     public NavMeshSurface NavMeshSurfaceForPolice;
@@ -24,6 +32,10 @@ public class GameManager : MonoBehaviour
     public bool IsBulletCameraActive = false;
     [HideInInspector]
     public bool IsPoliceCameraActive = false;
+
+    [HideInInspector]
+    public bool IsPlayerExposure = false;
+
 
     [Header("Person Settings")]
     [SerializeField]
@@ -46,11 +58,14 @@ public class GameManager : MonoBehaviour
     [UnityEngine.Range(0.0f, 100.0f)]
     private float probabilityOfDetection = 50.0f;               // 발각될 확률
     [SerializeField]
-    [UnityEngine.Range(3.0f, 15.0f)]
+    [UnityEngine.Range(3.0f, 30.0f)]
     private float timeIntervalForGenerateNewPeople = 10.0f;
+    public Transform PoliceGoalTransform;
 
     private Camera playerCamera;
     private float timerForGenerateNewPeople = 0.0f;
+    private GameObject currentTarget = null;
+    
     
     private void Awake()
     {
@@ -65,12 +80,6 @@ public class GameManager : MonoBehaviour
         }
 
         playerCamera = Camera.main;
-
-
-        // 게임 시작 시 최초 타겟 생성
-        int randomIndex = UnityEngine.Random.Range(0, personObjects.Count);
-        GameObject newTarget = personObjects[randomIndex];
-        newTarget.GetComponent<TargetController>().Selected();
     }
 
     private void Update()
@@ -81,6 +90,20 @@ public class GameManager : MonoBehaviour
         {
             GenerateNewPerson();
             timerForGenerateNewPeople = 0.0f;
+        }
+
+        InitializeAndAssignNewTarget();
+    }
+
+    // 게임 시작 후 초기 타겟 설정 및 아무런 사람이 없을 때 지속적으로 확인하여 새로운 사람이 등장하면 타겟으로 설정
+    private void InitializeAndAssignNewTarget()
+    {
+        if (personObjects.Count > 0 && currentTarget == null)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, personObjects.Count);
+            GameObject newTarget = personObjects[randomIndex];
+            newTarget.GetComponent<TargetController>().Selected();
+            currentTarget = newTarget;
         }
     }
 
@@ -98,14 +121,17 @@ public class GameManager : MonoBehaviour
                 personObjects.Remove(who);
         }
 
-        if (personObjects.Count <= 0) return;
-
         if (isPlayerKilledCorrectTarget)
         {
-            int randomIndex = UnityEngine.Random.Range(0, personObjects.Count);
+            if (personObjects.Count <= 0) currentTarget = null;
+            else
+            {
+                int randomIndex = UnityEngine.Random.Range(0, personObjects.Count);
 
-            GameObject newTarget = personObjects[randomIndex];
-            newTarget.GetComponent<TargetController>().Selected();
+                GameObject newTarget = personObjects[randomIndex];
+                newTarget.GetComponent<TargetController>().Selected();
+                currentTarget = newTarget;
+            }
         }
 
         EvaluateAndHandleExposure(isPlayerKilledCorrectTarget, isPlayerKilledPolice);
@@ -126,7 +152,7 @@ public class GameManager : MonoBehaviour
                 player.GetComponentInChildren<WeaponSniperRifle>().ToggleScopeOverlay();
             }
 
-            Time.timeScale = hitObject != null ? 0.0125f : 0.3f;
+            Time.timeScale = hitObject != null ? 0.1f : 0.3f;
             Time.fixedDeltaTime = Time.timeScale * 0.02f;
         }
     }
@@ -169,11 +195,15 @@ public class GameManager : MonoBehaviour
             if (UnityEngine.Random.Range(0.0f, 100.0f) <= probabilityOfDetection)
             {
                 // 발각 로직
+                IsPlayerExposure = true;
+                
                 // TODO: 1. 위장 경찰의 등장 - 이미 발각 되어진 상태라면 코루틴 수행되지 않도록
                 ActivatePoliceCamera();
                 StartCoroutine(policeObject.GetComponent<PoliceController>().CamouflagePoliceAppearRoutine());
+                PoliceChasePlayer?.Invoke();
 
                 // TODO: 2. 씬에 존재하는 사람들의 도망
+                TargetRunAway?.Invoke();
                 
             }
             else

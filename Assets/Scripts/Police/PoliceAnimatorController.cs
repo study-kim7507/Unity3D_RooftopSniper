@@ -2,15 +2,31 @@ using UnityEngine;
 
 public class PoliceAnimatorController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private enum State
     {
-        
+        Walk,
+        Run
+    }
+    private State CurrentState;
+    private Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponentInChildren<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Walk()
     {
-        
+        CurrentState = State.Walk;
+
+        animator.SetTrigger("Walk");
     }
+
+    public void Run()
+    {
+        CurrentState = State.Run;
+
+        animator.SetTrigger("Run");
+    }
+
 }

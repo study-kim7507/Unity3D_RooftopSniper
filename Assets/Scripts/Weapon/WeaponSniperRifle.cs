@@ -64,7 +64,7 @@ public class WeaponSniperRifle : MonoBehaviour
         else OnScoped();
     }
 
-    private void OnUnscoped()
+    public void OnUnscoped()
     {
         ToggleScopeOverlay();
         maskedCamera.SetActive(false);
@@ -81,7 +81,7 @@ public class WeaponSniperRifle : MonoBehaviour
         }
     }
 
-    private void OnScoped()
+    public void OnScoped()
     {
         ToggleScopeOverlay();
         maskedCamera.SetActive(true);

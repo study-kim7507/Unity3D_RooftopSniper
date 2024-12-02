@@ -2,33 +2,43 @@ using UnityEngine;
 
 public class TargetAnimatorController : MonoBehaviour
 {
-    enum State
+    private enum State
     {
         Idle,
         Walk,
         Run
     }
 
-    private State state;
+    private State CurrentState;
     private Animator animator;
 
-    private void Start()
+    private void Awake()
     {
-        state = State.Idle;
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
     }
 
-    private void Update()
+    public void Idle()
     {
-        switch (state)
-        {
-            case State.Idle:
-                break;
-            case State.Walk:
-                break;
-            case State.Run:
-                break;
-        }
+        CurrentState = State.Idle;
+
+        int randomIndex = UnityEngine.Random.Range(1, 5);
+        animator.SetTrigger("Idle" + randomIndex);
+    }
+
+    public void Walk()
+    {
+
+        // TODO: Walk도 여러 개의 애니메이션이 존재함 Idle과 유사하게 변경 필요
+        CurrentState = State.Walk;
+
+        animator.SetTrigger("Walk");
+    }
+
+    public void Run()
+    {
+        CurrentState = State.Run;
+
+        animator.SetTrigger("Run");
     }
 
 }

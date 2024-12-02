@@ -9,18 +9,25 @@ public abstract class PersonController : MonoBehaviour
 {
     [HideInInspector]
     public NavMeshSurface NavMeshSurface;      // 현재 속한 navMeshSurface
+    [HideInInspector]
+    public NavMeshAgent NavMeshAgent;
 
     public bool IsSelect = false;
     public bool IsPolice = false;
 
-    protected Renderer[] renderers;
-    protected NavMeshAgent navMeshAgent;
+    [Header("Render Camera")]
+    [SerializeField]
+    protected GameObject renderCamera;
+    [SerializeField]
+    protected GameObject renderTarget;
 
+    protected Renderer[] renderers;
 
     protected virtual void Awake()
     {
         renderers = GetComponentsInChildren<Renderer>();
-        navMeshAgent = GetComponent<NavMeshAgent>();
+        NavMeshAgent = GetComponent<NavMeshAgent>();
+        NavMeshAgent.speed = 0.5f;
     }
 
     public void OnDamaged()
@@ -67,19 +74,25 @@ public abstract class PersonController : MonoBehaviour
     }
 
 
-    protected Vector3 GetRandomPositionInNavMeshSurface()
+    protected abstract Vector3 GetRandomPositionInNavMeshSurface();
+
+    protected void SetRenderTargetLayerAndSetRenderCameraCullingMask(string nameOfLayer)
     {
-        // NavMeshSurface의 사이즈와 센터를 사용하여 랜덤 포지션 계산
-        Vector3 center = NavMeshSurface.transform.position + NavMeshSurface.center;
-        Vector3 size = NavMeshSurface.size;
+        int renderLayer = LayerMask.NameToLayer(nameOfLayer);
 
-        // 랜덤 포지션 계산 (사이즈의 절반을 빼서 범위를 맞춤)
-        float randomX = Random.Range(center.x - size.x / 2, center.x + size.x / 2);
-        float randomZ = Random.Range(center.z - size.z / 2, center.z + size.z / 2);
+        renderTarget.layer = renderLayer;
+        foreach (Transform renderTargetChildObjectTransform in renderTarget.transform)
+        {
+            renderTargetChildObjectTransform.gameObject.layer = renderLayer;
+        }
 
-        // Y축은 현재 오브젝트의 Y축을 유지하도록 설정
-        float randomY = transform.position.y;
-
-        return new Vector3(randomX, randomY, randomZ);
+        int cullingMask = 1 << renderLayer;
+        if (nameOfLayer == "Police")
+        {
+            cullingMask |= (1 << LayerMask.NameToLayer("Ground"));
+            cullingMask |= (1 << LayerMask.NameToLayer("Building"));
+        }
+        
+        renderCamera.GetComponent<Camera>().cullingMask = cullingMask; 
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - Bullet
   - Target
   - Police
+  - PoliceGoalPoint
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Target
   - Ground
   - Building
-  - 
+  - Police
   - 
   - 
   - 

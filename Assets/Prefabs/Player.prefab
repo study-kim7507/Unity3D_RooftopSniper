@@ -649,11 +649,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c76a8e0031922d04d88b1c48124498b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsZoomed: 0
   keyCodeRun: 304
   audioClipWalk: {fileID: 8300000, guid: 74abbbf1b1724e34b894191db38e10a0, type: 3}
   audioClipRun: {fileID: 8300000, guid: d2add02f58e61e640aba3ae9110591cb, type: 3}
   weapon: {fileID: 5699082328673210600}
-  IsZoomed: 0
 --- !u!114 &8896137364635110194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1701,13 +1701,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2327920eb670947a508c1fa357cfcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClipTakeOutWeapons: {fileID: 0}
   audioClipAiming: {fileID: 8300000, guid: afe80d867ef6b8c4fa45b07f1f99533c, type: 3}
   audioClipFire: {fileID: 8300000, guid: c1bd91cf7c20534478c9b9c5d69d1732, type: 3}
-  scopeOverlay: {fileID: 0}
   maskedCamera: {fileID: 4044910147792257284}
   mainCamera: {fileID: 7442065206845944297}
   scopedFOV: 10
+  scopeOverlay: {fileID: 0}
   muzzleTransform: {fileID: 5707430355975596487}
   bulletPrefab: {fileID: 5362721006924918389, guid: db1b4adf8b047474892b9336dc8bd122, type: 3}
   casingSpawnPoint: {fileID: 5590045876259122495}
