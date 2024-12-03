@@ -17,6 +17,8 @@ public class TargetController : PersonController
         NavMeshSurface = GameManager.Instance.NavMeshSurfacesForPeople[UnityEngine.Random.Range(0, GameManager.Instance.NavMeshSurfacesForPeople.Count)];
         NavMeshAgent.areaMask = 1 << NavMeshSurface.defaultArea;
 
+        NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
+
         targetAnimatorController = GetComponent<TargetAnimatorController>();
         PerformRandomActionIdleOrWalk();
 
@@ -26,7 +28,7 @@ public class TargetController : PersonController
     private void Update()
     {
         // 도착 여부 확인
-        if (!hasArrived && NavMeshAgent.pathPending == false && NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance)
+        if (!hasArrived && NavMeshAgent.pathPending == false && NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance + 0.5f)
         {
     
             // 플레이어가 발각되었을 때 플레이어가 경찰을 죽이거나, 플레이어가 경찰에게 잡히기 전까지 계속 도망 다니도록

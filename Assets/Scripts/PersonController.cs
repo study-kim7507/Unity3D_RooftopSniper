@@ -35,6 +35,8 @@ public abstract class PersonController : MonoBehaviour
         if (!IsSelect && !IsPolice)
         {
             // 타겟이 아닌 사람을 죽임
+            GameManager.Instance.Reward -= 50.0f;
+
             // 사라질 때 붉은색 이펙트
             foreach (Renderer renderer in renderers)
             {
@@ -43,7 +45,10 @@ public abstract class PersonController : MonoBehaviour
         }
         else
         {
-            // 올바른 타겟을 죽임 
+            // 올바른 타겟을 죽임
+            if (IsSelect) GameManager.Instance.Reward += 100.0f;
+            if (!GameManager.Instance.IsPlayerExposure && IsPolice) GameManager.Instance.Reward += 200.0f;
+
             // 사라질 때 초록색 이펙트
             foreach (Renderer renderer in renderers)
             {

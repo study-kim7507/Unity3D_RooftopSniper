@@ -1,9 +1,8 @@
 /*
  * 
- * TODO : Target(People) 초기 스폰 위치 설정 문제 해결 필요(NavMeshSurface, NavMeshAgent -> AreaMask 문제)
- *        -> GetRandomPositionInNavMeshSurface 함수 수정 필요 
- * TODO : NavMeshAgent의 Destination에 다른 오브젝트가 존재하면 새로운 랜덤 위치를 생성하도록
- * TODO : Police 경찰의 초기 스폰 위치 설정 문제 해결 필요
+ *
+ * 
+ * 
  * TODO : 경찰이 GoalPoint에 도착했을 때, 플레이어 목숨을 감소시키고 새로운 위장 경찰 등장 시키도록
  * TODO : 이미 발각된 상태에서 또 다시 발각되는 문제 해결 필요
  * TODO : 추가적인 Asset 임포트 필요
@@ -36,7 +35,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool IsPlayerExposure = false;
 
-
     [Header("Person Settings")]
     [SerializeField]
     private List<GameObject> personPrefabs;
@@ -52,8 +50,12 @@ public class GameManager : MonoBehaviour
     [Header("Player")]
     [SerializeField]
     private GameObject player;
-    
+
     [Header("Game Settings")]
+    public int Life = 3;                                            // 플레이어의 남은 목숨 수
+    public int NumberOfDetections = 0;                              // 플레이어 발각 횟수
+    public float RemainingTime = 180.0f;                            // 남은 시간
+    public float Reward = 0.0f;                                     // 리워드
     [SerializeField]
     [UnityEngine.Range(0.0f, 100.0f)]
     private float probabilityOfDetection = 50.0f;               // 발각될 확률
@@ -69,15 +71,8 @@ public class GameManager : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
         playerCamera = Camera.main;
     }
@@ -195,15 +190,17 @@ public class GameManager : MonoBehaviour
             if (UnityEngine.Random.Range(0.0f, 100.0f) <= probabilityOfDetection)
             {
                 // 발각 로직
-                IsPlayerExposure = true;
+                NumberOfDetections++;                   // 발각 횟수 증가
                 
-                // TODO: 1. 위장 경찰의 등장 - 이미 발각 되어진 상태라면 코루틴 수행되지 않도록
-                ActivatePoliceCamera();
-                StartCoroutine(policeObject.GetComponent<PoliceController>().CamouflagePoliceAppearRoutine());
-                PoliceChasePlayer?.Invoke();
+                if (!IsPlayerExposure)
+                {
+                    IsPlayerExposure = true;
+                    ActivatePoliceCamera();
+                    StartCoroutine(policeObject.GetComponent<PoliceController>().CamouflagePoliceAppearRoutine());
+                }
+                PoliceChasePlayer?.Invoke();            // 경찰이 플레이어를 잡으러 이동함
 
-                // TODO: 2. 씬에 존재하는 사람들의 도망
-                TargetRunAway?.Invoke();
+                TargetRunAway?.Invoke();                // 사람들이 자신이 속한 NavMeshSurface 상에서 도망다님
                 
             }
             else

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
+using Unity.VisualScripting;
 
 public class PoliceController : PersonController
 {
@@ -18,7 +19,7 @@ public class PoliceController : PersonController
         NavMeshSurface = GameManager.Instance.NavMeshSurfaceForPolice;
         NavMeshAgent.areaMask = 1 << NavMeshSurface.defaultArea;                // NavMeshAgent가 이동가능한 NavMeshSurface를 한정
 
-        gameObject.transform.position = GetRandomPositionInNavMeshSurface();
+        NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
 
         SetRenderTargetLayerAndSetRenderCameraCullingMask("Police");
 
