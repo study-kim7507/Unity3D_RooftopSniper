@@ -1,13 +1,7 @@
 /*
- * 
- *
- * 
- * 
- * TODO : 경찰이 GoalPoint에 도착했을 때, 플레이어 목숨을 감소시키고 새로운 위장 경찰 등장 시키도록
- * TODO : 이미 발각된 상태에서 또 다시 발각되는 문제 해결 필요
- * TODO : 추가적인 Asset 임포트 필요
- *        -> 다양한 사람, 다양한 Idle, Walk, Run 애니메이션
- * 
+ * TODO: 애니메이션
+ * TODO: 씬 디자인 및 UI 디자인
+ * TODO: 플레이어 목숨, 플레이어 노출, 시간 제한, 보상 등 게임 로직 구현
  */
 using NUnit.Framework;
 using System;
@@ -43,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Police Settings")]
     [SerializeField]
-    private GameObject policePrefab;
+    private List<GameObject> policePrefabs;
     [SerializeField]
     private GameObject policeObject;
 
@@ -147,7 +141,7 @@ public class GameManager : MonoBehaviour
                 player.GetComponentInChildren<WeaponSniperRifle>().ToggleScopeOverlay();
             }
 
-            Time.timeScale = hitObject != null ? 0.1f : 0.3f;
+            Time.timeScale = hitObject != null ? 0.025f : 0.3f;
             Time.fixedDeltaTime = Time.timeScale * 0.02f;
         }
     }
@@ -250,7 +244,7 @@ public class GameManager : MonoBehaviour
     private void GenerateNewPolice()
     {
         Debug.Log("새로운 위장 경찰이 생성되었습니다.");
-        GameObject newPolice = Instantiate(policePrefab);
+        GameObject newPolice = Instantiate(policePrefabs[UnityEngine.Random.Range(0, policePrefabs.Count)]);
         policeObject = newPolice;
     }
 }

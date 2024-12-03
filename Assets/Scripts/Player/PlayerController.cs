@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject weapon;
 
+    private float mouseSensitivity = 2.0f;
     private RotateToMouse rotateToMouse;                                // 마우스 이동으로 카메라 회전
     private PlayerMovementController playerMovementController;          // 키보드 입력으로 플레이어 이동, 점프 등
     private Status status;                                              // 이동속도 등의 플레이어 정보 
@@ -27,7 +28,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource;                                    // 사운드 재생 제어
 
     private bool canFire = true;                                        // 현재 총을 발사할 수 있는지 (쿨타임)
-
+    
     private void Awake()
     {
         // 마우스 커서를 보이지 않게 설정
@@ -51,10 +52,21 @@ public class PlayerController : MonoBehaviour
         }
 
         UpdateSnipingStatus();
+        UpdateMouseSensitivity();
         UpdateRotate();
         UpdateMove();
         FireWithProjectile();
         UpdateWeaponFOV();
+    }
+
+    private void UpdateMouseSensitivity()
+    {
+        // 키 입력에 따라 마우스 감도 조절
+        if (Input.GetKeyDown(KeyCode.LeftBracket)) mouseSensitivity -= 0.1f; // 감도를 더 세밀하게 조절
+        else if (Input.GetKeyDown(KeyCode.RightBracket)) mouseSensitivity += 0.1f;
+
+        // 감도를 0.1 ~ 5.0 범위로 제한
+        mouseSensitivity = Mathf.Clamp(mouseSensitivity, 0.1f, 5.0f);
     }
 
     // 마우스 입력 (캐릭터 회전을 담당)
@@ -62,6 +74,10 @@ public class PlayerController : MonoBehaviour
     {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
+
+        // 마우스 감도 조절
+        mouseX *= mouseSensitivity;
+        mouseY *= mouseSensitivity;
 
         rotateToMouse.UpdateRotate(mouseX, mouseY);
     }

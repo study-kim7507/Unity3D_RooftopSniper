@@ -34,13 +34,10 @@ namespace CityPeople
         {
             motionTime = motionTimeTotal + 0.1f;
             DisableArrows();
-            if (cameraTargets.Length > 0)
+            var startCam = cameraTargets[currentCamera];
+            if (startCam != null)
             {
-                var startCam = cameraTargets[currentCamera];
-                if (startCam != null)
-                {
-                    transform.position = cameraTargets[currentCamera].transform.position;
-                }
+                transform.position = cameraTargets[currentCamera].transform.position;
             }
             TextCharName.text = HintMessage;
         }
