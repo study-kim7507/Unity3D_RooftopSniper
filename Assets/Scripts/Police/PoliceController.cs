@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
 using Unity.VisualScripting;
+using static PoliceAnimatorController;
 
 public class PoliceController : PersonController
 {
@@ -96,11 +97,24 @@ public class PoliceController : PersonController
 
     private void Patrol()
     {
+        // Walk, Jog
+        int randomAction = UnityEngine.Random.Range(0, 2);
+        PoliceAnimState action = (PoliceAnimState)randomAction;
+
         Vector3 RandomPosition = GetRandomPositionInNavMeshSurface();
-        NavMeshAgent.speed = 0.5f;
         NavMeshAgent.SetDestination(RandomPosition);
-        policeAnimatorController.Walk();
         hasArrived = false;
+
+        if (action == PoliceAnimState.Walk)
+        {
+            NavMeshAgent.speed = 0.5f;
+            policeAnimatorController.Walk();
+        }
+        else if (action == PoliceAnimState.Jog)
+        {
+            NavMeshAgent.speed = 1.0f;
+            policeAnimatorController.Jog();
+        }
     }
 
     private void OnDestroy()

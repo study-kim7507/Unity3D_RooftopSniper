@@ -4,6 +4,7 @@ using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static TargetAnimatorController;
 
 public class TargetController : PersonController
 {
@@ -20,7 +21,7 @@ public class TargetController : PersonController
         NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
 
         targetAnimatorController = GetComponent<TargetAnimatorController>();
-        PerformRandomActionIdleOrWalk();
+        PerformRandomActionIdleOrWalkOrJog();
 
         GameManager.TargetRunAway += RunAway;
     }
@@ -28,12 +29,12 @@ public class TargetController : PersonController
     private void Update()
     {
         // 도착 여부 확인
-        if (!hasArrived && NavMeshAgent.pathPending == false && NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance + 0.5f)
+        if (!hasArrived && NavMeshAgent.pathPending == false && NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance)
         {
     
             // 플레이어가 발각되었을 때 플레이어가 경찰을 죽이거나, 플레이어가 경찰에게 잡히기 전까지 계속 도망 다니도록
             if (GameManager.Instance.IsPlayerExposure) RunAway();
-            else PerformRandomActionIdleOrWalk();
+            else PerformRandomActionIdleOrWalkOrJog();
         }
     }
 
@@ -56,7 +57,7 @@ public class TargetController : PersonController
         float randomZ = Random.Range(center.z - size.z / 2, center.z + size.z / 2);
 
         // Y축은 현재 오브젝트의 Y축을 유지하도록 설정
-        float randomY = transform.position.y;
+        float randomY = 0;
 
         return new Vector3(randomX, randomY, randomZ);
     }
@@ -70,22 +71,34 @@ public class TargetController : PersonController
         hasArrived = false;
     }
 
-    private void PerformRandomActionIdleOrWalk()
-    { 
-        string randomAction = UnityEngine.Random.Range(0, 2) == 0 ? "Idle" : "Walk"; // 0 또는 1을 랜덤으로 선택
+    private void PerformRandomActionIdleOrWalkOrJog()
+    {
+        // Idle, Walk, Jog
+        int randomAction = UnityEngine.Random.Range(0, 3);
+        TargetAnimState action = (TargetAnimState)randomAction;
 
-        if (randomAction == "Idle")
+        
+        if (action == TargetAnimState.Idle)
         {
             targetAnimatorController.Idle();
             hasArrived = true;
         }
-        else
+        else 
         {
             Vector3 RandomPosition = GetRandomPositionInNavMeshSurface();
-            NavMeshAgent.speed = 0.5f;
             NavMeshAgent.SetDestination(RandomPosition);
-            targetAnimatorController.Walk();
             hasArrived = false;
+
+            if (action == TargetAnimState.Walk)
+            {
+                NavMeshAgent.speed = 0.5f;
+                targetAnimatorController.Walk();
+            }
+            else if (action == TargetAnimState.Jog)
+            {
+                NavMeshAgent.speed = 1.0f;
+                targetAnimatorController.Jog();
+            }
         }   
     }
 

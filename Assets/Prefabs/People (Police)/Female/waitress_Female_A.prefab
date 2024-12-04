@@ -205,6 +205,7 @@ GameObject:
   - component: {fileID: 3349989767445959918}
   - component: {fileID: 4775041589491102941}
   - component: {fileID: 253744209790384057}
+  - component: {fileID: 7906019778356044611}
   m_Layer: 0
   m_Name: RenderCamera
   m_TagString: Untagged
@@ -322,6 +323,14 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!81 &7906019778356044611
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2230036389758473654}
+  m_Enabled: 1
 --- !u!1 &2311669366107447028
 GameObject:
   m_ObjectHideFlags: 0
@@ -817,7 +826,7 @@ Animator:
   m_GameObject: {fileID: 5774413926493827994}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 1458b9933a03d584b9eff6763dd5cfa1, type: 3}
-  m_Controller: {fileID: 9100000, guid: afe9de63454bbd448a9886ad5a285ae7, type: 2}
+  m_Controller: {fileID: 9100000, guid: cce1e7a2553125f4394ff4520b918219, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1

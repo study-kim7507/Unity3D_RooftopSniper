@@ -581,7 +581,7 @@ Animator:
   m_GameObject: {fileID: 4346313806707204166}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ca5225b92973da74aa404a1b82c6ae97, type: 3}
-  m_Controller: {fileID: 9100000, guid: afe9de63454bbd448a9886ad5a285ae7, type: 2}
+  m_Controller: {fileID: 9100000, guid: cce1e7a2553125f4394ff4520b918219, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -863,7 +863,7 @@ Transform:
   m_GameObject: {fileID: 5386059254413814728}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.4929965, y: 0, z: 11.815264}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1317,6 +1317,7 @@ GameObject:
   - component: {fileID: 1959905943724440717}
   - component: {fileID: 4821871449675676761}
   - component: {fileID: 3664388543452085365}
+  - component: {fileID: 2270133392113709333}
   m_Layer: 0
   m_Name: RenderCamera
   m_TagString: Untagged
@@ -1434,3 +1435,11 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!81 &2270133392113709333
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9114033864370689041}
+  m_Enabled: 1

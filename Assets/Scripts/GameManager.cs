@@ -1,7 +1,8 @@
 /*
- * TODO: 애니메이션
  * TODO: 씬 디자인 및 UI 디자인
- * TODO: 플레이어 목숨, 플레이어 노출, 시간 제한, 보상 등 게임 로직 구현
+ * TODO: 스폰 포인트
+ * TODO: TargetController GetRandomPositionInNavMeshSurface 수정 필요
+ * TODO: 다른 오브젝트들과 Destination이 겹치는 문제 수정 필요 -> 일정 시간 동안 도달 못하면 취소 시키는 식으로
  */
 using NUnit.Framework;
 using System;
@@ -236,15 +237,19 @@ public class GameManager : MonoBehaviour
 
     private void GenerateNewPerson()
     {
-        Debug.Log("새로운 사람이 생성되었습니다.");
-        GameObject newPerson = Instantiate(personPrefabs[UnityEngine.Random.Range(0, personPrefabs.Count)]);
+        Debug.Log("새로운 사람이 생성되었습니다");
+
+        int random = (int)UnityEngine.Random.Range(0, personPrefabs.Count);
+        GameObject newPerson = Instantiate(personPrefabs[random]);
         personObjects.Add(newPerson);
     }
 
     private void GenerateNewPolice()
     {
         Debug.Log("새로운 위장 경찰이 생성되었습니다.");
-        GameObject newPolice = Instantiate(policePrefabs[UnityEngine.Random.Range(0, policePrefabs.Count)]);
+
+        int random = (int)UnityEngine.Random.Range(0, policePrefabs.Count);
+        GameObject newPolice = Instantiate(policePrefabs[random]);
         policeObject = newPolice;
     }
 }
