@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f1d76f02fc4ea4aaa3ffd7e09038be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NavMeshSurfacesForPeople: []
+  NavMeshSurfacesForPeople:
+  - {fileID: 0}
+  - {fileID: 0}
   NavMeshSurfaceForPolice: {fileID: 0}
   IsBulletCameraActive: 0
   IsPoliceCameraActive: 0
@@ -152,7 +154,12 @@ MonoBehaviour:
   - {fileID: 3768691488644907715, guid: 3cb77665f06e54f4cab531e1c4548cef, type: 3}
   - {fileID: 1337121901460331280, guid: 394d579d0ba78664aa8cc0772c649259, type: 3}
   - {fileID: 441740659491016066, guid: 9d48137b48efeef4ab001643a4b8dcc8, type: 3}
-  personObjects: []
+  personObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   policePrefabs:
   - {fileID: 5195973564322292134, guid: 902b9c6f6e9b48047a5c434d0baa1abb, type: 3}
   - {fileID: 5386059254413814728, guid: 70ef7193374c5704b9575cc8427b0f2a, type: 3}
@@ -171,5 +178,6 @@ MonoBehaviour:
   RemainingTime: 180
   Reward: 0
   probabilityOfDetection: 100
-  timeIntervalForGenerateNewPeople: 10
+  timeIntervalForGenerateNewPeople: 3
   PoliceGoalTransform: {fileID: 0}
+  RemainingTimeText: {fileID: 0}

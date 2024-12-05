@@ -51,12 +51,23 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        
+        if (GameManager.Instance.IsGameEnded) return;
+        PlayerPauseGame();
+
+        if (GameManager.Instance.IsGamePaused) return;
         UpdateSnipingStatus();
         UpdateMouseSensitivity();
         UpdateRotate();
         UpdateMove();
         FireWithProjectile();
         UpdateWeaponFOV();
+    }
+
+    private void PlayerPauseGame()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && !GameManager.Instance.IsGamePaused) GameManager.Instance.GamePause();
+        else if (Input.GetKeyDown(KeyCode.Escape) && GameManager.Instance.IsGamePaused) GameManager.Instance.GameResume();
     }
 
     private void UpdateMouseSensitivity()

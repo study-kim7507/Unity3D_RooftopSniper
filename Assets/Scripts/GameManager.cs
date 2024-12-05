@@ -7,6 +7,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -18,7 +19,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public static event Action TargetRunAway;
     public static event Action PoliceChasePlayer;
-
+    
     public List<NavMeshSurface> NavMeshSurfacesForPeople;
     public NavMeshSurface NavMeshSurfaceForPolice;
 
@@ -29,6 +30,15 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector]
     public bool IsPlayerExposure = false;
+    [HideInInspector]
+    public bool IsPlayerCaught = false;
+
+    [HideInInspector]
+    public bool IsGameCleared = false;
+    [HideInInspector]
+    public bool IsGameEnded = false;
+    [HideInInspector]
+    public bool IsGamePaused = false;
 
     [Header("Person Settings")]
     [SerializeField]
@@ -50,19 +60,29 @@ public class GameManager : MonoBehaviour
     public int Life = 3;                                            // 플레이어의 남은 목숨 수
     public int NumberOfDetections = 0;                              // 플레이어 발각 횟수
     public float RemainingTime = 180.0f;                            // 남은 시간
-    public float Reward = 0.0f;                                     // 리워드
+    public int TargetKillCount = 0;
+    public int PoliceKillCount = 0;
     [SerializeField]
     [UnityEngine.Range(0.0f, 100.0f)]
-    private float probabilityOfDetection = 50.0f;               // 발각될 확률
+    private float probabilityOfDetection = 50.0f;                   // 발각될 확률
     [SerializeField]
     [UnityEngine.Range(3.0f, 30.0f)]
     private float timeIntervalForGenerateNewPeople = 10.0f;
     public Transform PoliceGoalTransform;
 
+    [Header("UI")]
+    public TMP_Text RemainingTimeText;
+    public GameObject Tooltip;
+    [SerializeField]
+    private GameObject playerUI;
+    [SerializeField]
+    private GameObject GameOverPopupCanvas;
+    [SerializeField]
+    private GameObject PauseMenuPopupCanvas;
+
     private Camera playerCamera;
     private float timerForGenerateNewPeople = 0.0f;
     private GameObject currentTarget = null;
-    
     
     private void Awake()
     {
@@ -74,8 +94,11 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        timerForGenerateNewPeople += Time.deltaTime;
+        // 게임 종료 혹은 게임 일시정지 시
+        if (IsGameEnded || IsGamePaused) return;
 
+
+        timerForGenerateNewPeople += Time.deltaTime;
         if (timerForGenerateNewPeople >= timeIntervalForGenerateNewPeople)
         {
             GenerateNewPerson();
@@ -83,6 +106,68 @@ public class GameManager : MonoBehaviour
         }
 
         InitializeAndAssignNewTarget();
+
+
+        // UI
+        if (Time.timeScale == 1.0f && RemainingTime >= 0.0f) RemainingTime -= Time.deltaTime;
+        else if (RemainingTime < 0.0f) GameClear();
+        RemainingTimeText.text =  "Remaining Time : " + Mathf.FloorToInt(RemainingTime / 60) + "m " + Mathf.FloorToInt(RemainingTime % 60) + "s";
+
+        if (Life < 0) GameOver();
+    }
+
+    public void GameClear()
+    {
+        IsGameEnded = true;
+        IsGameCleared = true;
+
+        // 마우스 커서를 보이게
+        UnityEngine.Cursor.visible = true;
+        UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 0.0f;
+
+        playerUI.SetActive(false);
+        GameOverPopupCanvas.SetActive(true);
+    }
+
+    public void GameOver()
+    {
+        IsGameEnded = true;
+        IsGameCleared = false;
+
+        // 마우스 커서를 보이게
+        UnityEngine.Cursor.visible = true;
+        UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 0.0f;
+
+        playerUI.SetActive(false);
+        GameOverPopupCanvas.SetActive(true);
+    }
+
+    public void GamePause()
+    {
+        IsGamePaused = true;
+
+        // 마우스 커서를 보이게
+        UnityEngine.Cursor.visible = true;
+        UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 0.0f;
+
+        playerUI.SetActive(false);
+        PauseMenuPopupCanvas.SetActive(true);
+    }
+
+    public void GameResume()
+    {
+        IsGamePaused = false;
+
+        // 마우스 커서를 보이지 않게
+        UnityEngine.Cursor.visible = false;
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1.0f;
+
+        PauseMenuPopupCanvas.SetActive(false);
+        playerUI.SetActive(true);
     }
 
     // 게임 시작 후 초기 타겟 설정 및 아무런 사람이 없을 때 지속적으로 확인하여 새로운 사람이 등장하면 타겟으로 설정
@@ -171,10 +256,31 @@ public class GameManager : MonoBehaviour
     {
         if (isPlayerKilledCorrectTarget || isPlayerKilledPolice)
         {   
-            // 만약 플레이어가 위장 경찰을 죽인 경우 새로운 위장 경찰이 등장하도록
-            if (isPlayerKilledPolice)
+            
+            if (isPlayerKilledPolice && !IsPlayerExposure && !IsPlayerCaught)
             {
+                // 만약 플레이어가 위장 경찰을 죽인 경우
+                Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("위장 경찰을 제거하였습니다. 추가적인 보상을 얻을 수 있게 됩니다.");
+                
                 GenerateNewPolice();
+            }
+            else if (isPlayerKilledPolice && IsPlayerExposure && !IsPlayerCaught)
+            {
+                Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("다행입니다. 붙잡히기 전에 경찰을 제거하였습니다.");
+
+                GenerateNewPolice();
+            }
+            else if (isPlayerKilledPolice && IsPlayerExposure && IsPlayerCaught)
+            {
+                // 만약 플레이어가 발각되고 경찰로부터 붙잡힌 경우
+                Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("경찰에게 붙잡혔습니다. 목숨이 하나 감소합니다.");
+
+                GenerateNewPolice();
+            }
+            else
+            {
+                Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("의뢰받은 타겟을 제거하였습니다.");
+                Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("새로운 타겟이 지정됩니다.");
             }
         }
         else
@@ -184,12 +290,12 @@ public class GameManager : MonoBehaviour
 
             if (UnityEngine.Random.Range(0.0f, 100.0f) <= probabilityOfDetection)
             {
-                // 발각 로직
-                NumberOfDetections++;                   // 발각 횟수 증가
-                
                 if (!IsPlayerExposure)
                 {
+                    NumberOfDetections++;                   // 발각 횟수 증가
                     IsPlayerExposure = true;
+                    Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("발각 되었습니다. 경찰이 모습을 드러냅니다");
+                    Tooltip.GetComponent<GameStatusTooltipDisplayer>().DisplayTooltip("경찰을 우선적으로 제거하여 잡히지 않도록 하세요!");
                     ActivatePoliceCamera();
                     StartCoroutine(policeObject.GetComponent<PoliceController>().CamouflagePoliceAppearRoutine());
                 }
@@ -237,7 +343,7 @@ public class GameManager : MonoBehaviour
 
     private void GenerateNewPerson()
     {
-        Debug.Log("새로운 사람이 생성되었습니다");
+        // Debug.Log("새로운 사람이 생성되었습니다");
 
         int random = (int)UnityEngine.Random.Range(0, personPrefabs.Count);
         GameObject newPerson = Instantiate(personPrefabs[random]);
@@ -246,7 +352,7 @@ public class GameManager : MonoBehaviour
 
     private void GenerateNewPolice()
     {
-        Debug.Log("새로운 위장 경찰이 생성되었습니다.");
+        // Debug.Log("새로운 위장 경찰이 생성되었습니다.");
 
         int random = (int)UnityEngine.Random.Range(0, policePrefabs.Count);
         GameObject newPolice = Instantiate(policePrefabs[random]);

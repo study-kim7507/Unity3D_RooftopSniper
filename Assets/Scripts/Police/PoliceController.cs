@@ -44,9 +44,10 @@ public class PoliceController : PersonController
     public IEnumerator CamouflagePoliceAppearRoutine()
     {
         renderCamera.SetActive(true);
-
+       
         yield return new WaitForSeconds(1.0f);
 
+        Time.timeScale = 0.7f;
         StartCoroutine(ChangeMeshRoutine());
     }
 
@@ -57,7 +58,7 @@ public class PoliceController : PersonController
         float x = -1.0f;
         while (x <= 1.0f)
         {
-            x += Time.deltaTime * 1.5f;
+            x += Time.deltaTime;
 
             foreach (var render in renderers)
             {
@@ -67,6 +68,8 @@ public class PoliceController : PersonController
 
             yield return null;
         }
+
+        Time.timeScale = 1.0f;
 
         // 위장 경찰의 카메라 (메인 카메라)를 비활성화
         renderCamera.SetActive(false);
@@ -121,5 +124,6 @@ public class PoliceController : PersonController
     {
         GameManager.PoliceChasePlayer -= ChasePlayer;
         GameManager.Instance.IsPlayerExposure = false;
+        GameManager.Instance.IsPlayerCaught = false;
     }
 }
