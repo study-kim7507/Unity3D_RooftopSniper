@@ -20,6 +20,7 @@ public class PoliceController : PersonController
         NavMeshSurface = GameManager.Instance.NavMeshSurfaceForPolice;
         NavMeshAgent.areaMask = 1 << NavMeshSurface.defaultArea;                // NavMeshAgent가 이동가능한 NavMeshSurface를 한정
 
+        gameObject.transform.position = NavMeshSurface.transform.position;
         NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
 
         SetRenderTargetLayerAndSetRenderCameraCullingMask("Police");
@@ -44,10 +45,10 @@ public class PoliceController : PersonController
     public IEnumerator CamouflagePoliceAppearRoutine()
     {
         renderCamera.SetActive(true);
-       
-        yield return new WaitForSeconds(1.0f);
-
         Time.timeScale = 0.7f;
+     
+        yield return new WaitForSecondsRealtime(1.0f);
+
         StartCoroutine(ChangeMeshRoutine());
     }
 
@@ -77,17 +78,6 @@ public class PoliceController : PersonController
         // 플레이어 카메라 활성화
         GameManager.Instance.DeactivatePoliceCamera();
     }
-
-    protected override Vector3 GetRandomPositionInNavMeshSurface()
-    {
-        Vector3 randomDirection = Random.insideUnitSphere * 30.0f;
-        randomDirection += transform.position;
-
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, 30.0f, NavMeshAgent.areaMask);
-        return hit.position;
-    }
-
 
     private void ChasePlayer()
     {

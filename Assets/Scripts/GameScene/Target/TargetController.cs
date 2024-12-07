@@ -18,6 +18,7 @@ public class TargetController : PersonController
         NavMeshSurface = GameManager.Instance.NavMeshSurfacesForPeople[UnityEngine.Random.Range(0, GameManager.Instance.NavMeshSurfacesForPeople.Count)];
         NavMeshAgent.areaMask = 1 << NavMeshSurface.defaultArea;
 
+        gameObject.transform.position = NavMeshSurface.transform.position;
         NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
 
         targetAnimatorController = GetComponent<TargetAnimatorController>();
@@ -46,21 +47,7 @@ public class TargetController : PersonController
         renderCamera.SetActive(true);
     }
 
-    protected override Vector3 GetRandomPositionInNavMeshSurface()
-    {
-        // NavMeshSurface의 사이즈와 센터를 사용하여 랜덤 포지션 계산
-        Vector3 center = NavMeshSurface.transform.position + NavMeshSurface.center;
-        Vector3 size = NavMeshSurface.size;
-
-        // 랜덤 포지션 계산 (사이즈의 절반을 빼서 범위를 맞춤)
-        float randomX = Random.Range(center.x - size.x / 2, center.x + size.x / 2);
-        float randomZ = Random.Range(center.z - size.z / 2, center.z + size.z / 2);
-
-        // Y축은 현재 오브젝트의 Y축을 유지하도록 설정
-        float randomY = 0;
-
-        return new Vector3(randomX, randomY, randomZ);
-    }
+    
 
     private void RunAway()
     {

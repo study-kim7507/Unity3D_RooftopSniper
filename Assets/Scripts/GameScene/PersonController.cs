@@ -75,8 +75,15 @@ public abstract class PersonController : MonoBehaviour
         GameManager.Instance.AssignNewTargetIfCorrect(gameObject);   
     }
 
+    protected Vector3 GetRandomPositionInNavMeshSurface()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * 30.0f;
+        randomDirection += transform.position;
 
-    protected abstract Vector3 GetRandomPositionInNavMeshSurface();
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, 30.0f, NavMeshAgent.areaMask);
+        return hit.position;
+    }
 
     protected void SetRenderTargetLayerAndSetRenderCameraCullingMask(string nameOfLayer)
     {
