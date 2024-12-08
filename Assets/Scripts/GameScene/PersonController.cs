@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -77,12 +78,19 @@ public abstract class PersonController : MonoBehaviour
 
     protected Vector3 GetRandomPositionInNavMeshSurface()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * 30.0f;
-        randomDirection += transform.position;
+        for (int i = 0; i < 30; i++)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * 50.0f; // 거리 줄이기
+            randomDirection += gameObject.transform.position;
 
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, 30.0f, NavMeshAgent.areaMask);
-        return hit.position;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomDirection, out hit, 75.0f, NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+        }
+
+        return new Vector3(0, 1, 0);
     }
 
     protected void SetRenderTargetLayerAndSetRenderCameraCullingMask(string nameOfLayer)

@@ -4,7 +4,7 @@ public class PoliceGoalPoint : MonoBehaviour
 {
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Police"))
+        if (collision.gameObject.CompareTag("Police") && GameManager.Instance.IsPlayerExposure)
         {
             GameManager.Instance.Life--;                        // 플레이어가 경찰에게 붙잡힘 목숨 1개 감소
             GameManager.Instance.IsPlayerCaught = true;

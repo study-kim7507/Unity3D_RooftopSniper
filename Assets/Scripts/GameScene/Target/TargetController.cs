@@ -18,7 +18,7 @@ public class TargetController : PersonController
         NavMeshSurface = GameManager.Instance.NavMeshSurfacesForPeople[UnityEngine.Random.Range(0, GameManager.Instance.NavMeshSurfacesForPeople.Count)];
         NavMeshAgent.areaMask = 1 << NavMeshSurface.defaultArea;
 
-        gameObject.transform.position = NavMeshSurface.transform.position;
+        gameObject.transform.position = new Vector3(0, 0, 0);
         NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
 
         targetAnimatorController = GetComponent<TargetAnimatorController>();
@@ -52,7 +52,7 @@ public class TargetController : PersonController
     private void RunAway()
     {
         Vector3 RandomPosition = GetRandomPositionInNavMeshSurface();
-        NavMeshAgent.speed = 2.5f;
+        NavMeshAgent.speed = 3.5f;
         NavMeshAgent.SetDestination(RandomPosition);
         targetAnimatorController.Run();
         hasArrived = false;
@@ -78,12 +78,12 @@ public class TargetController : PersonController
 
             if (action == TargetAnimState.Walk)
             {
-                NavMeshAgent.speed = 0.5f;
+                NavMeshAgent.speed = 0.75f;
                 targetAnimatorController.Walk();
             }
             else if (action == TargetAnimState.Jog)
             {
-                NavMeshAgent.speed = 1.0f;
+                NavMeshAgent.speed = 2.0f;
                 targetAnimatorController.Jog();
             }
         }   

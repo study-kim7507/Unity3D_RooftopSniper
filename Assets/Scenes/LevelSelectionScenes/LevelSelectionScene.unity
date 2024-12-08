@@ -626,9 +626,6 @@ MonoBehaviour:
   - LevelName: "\uC624\uC804 \uAC15\uB0A8"
     LevelThumb: {fileID: 21300000, guid: 65dd9627a4c80434ea5f488089c65933, type: 3}
     SceneName: Day_Gangnam
-  - LevelName: "\uB2A6\uC740 \uBC24 \uAC15\uB0A8"
-    LevelThumb: {fileID: 21300000, guid: 65dd9627a4c80434ea5f488089c65933, type: 3}
-    SceneName: Night_Gangnam
   LevelPanelPrefab: {fileID: 5616021214024526033, guid: 62c9852622d0395459d146afae95fbb3, type: 3}
   ScrollViewContent: {fileID: 1923829355}
   LevelSelectionSceneCanvas: {fileID: 828255101}

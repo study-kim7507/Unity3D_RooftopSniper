@@ -12,7 +12,7 @@ public class PrefabEditor : MonoBehaviour
     {
         // 변경할 AnimatorController를 Resources 폴더에서 로드
         // AnimatorController newController = Resources.Load<AnimatorController>("CityFemaleAnimator");
-        AnimatorController newController = Resources.Load<AnimatorController>("CityMaleAnimator");
+        AnimatorController newController = Resources.Load<AnimatorController>("TEST");
 
         if (newController == null)
         {
@@ -32,6 +32,22 @@ public class PrefabEditor : MonoBehaviour
                 // AnimatorController 변경
                 animator.runtimeAnimatorController = newController;
                 Debug.Log($"Changed {obj.name}'s AnimatorController to {newController.name}.");
+            }
+        }
+    }
+
+    [MenuItem("Tools/Change Rigidbody Constraints")]
+    public static void ChangeRigidbodyContraints()
+    {
+        // 씬에 있는 모든 GameObject 찾기
+        GameObject[] allObjects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+
+        foreach (GameObject obj in allObjects)
+        {
+            Rigidbody rigidbody = obj.GetComponentInChildren<Rigidbody>();
+            if (rigidbody != null)
+            {
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
             }
         }
     }

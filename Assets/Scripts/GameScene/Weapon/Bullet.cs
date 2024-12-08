@@ -11,14 +11,19 @@ public class Bullet : MonoBehaviour
     public float LifeTime = 3.0f;
     [SerializeField]
     public float Speed;         // 총알이 날아가는 속도
-    
+
+    private LayerMask layerMask;
 
     private void Start()
     {
         Vector3 moveDirection = Direction.normalized * Speed * LifeTime;
+
+        // 무시할 LayerMask 설정
+        layerMask = ~(1 << LayerMask.NameToLayer("PlayerBlockWall"));
+
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, moveDirection, out hit, moveDirection.magnitude))
+        if (Physics.Raycast(transform.position, moveDirection, out hit, moveDirection.magnitude, layerMask))
         {
             GameManager.Instance.ActivateBulletCamera(hit.collider.gameObject);
             StartCoroutine(DestroyAfterTime(true, hit.collider.gameObject));
@@ -41,7 +46,7 @@ public class Bullet : MonoBehaviour
         Vector3 moveDirection = Direction.normalized * Speed * Time.fixedDeltaTime;
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, moveDirection, out hit, moveDirection.magnitude))
+        if (Physics.Raycast(transform.position, moveDirection, out hit, moveDirection.magnitude, layerMask))
         {
             if (hit.collider.CompareTag("Target") || hit.collider.CompareTag("Police"))
             {

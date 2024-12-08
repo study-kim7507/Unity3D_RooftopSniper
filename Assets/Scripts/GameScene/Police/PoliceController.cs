@@ -20,7 +20,7 @@ public class PoliceController : PersonController
         NavMeshSurface = GameManager.Instance.NavMeshSurfaceForPolice;
         NavMeshAgent.areaMask = 1 << NavMeshSurface.defaultArea;                // NavMeshAgent가 이동가능한 NavMeshSurface를 한정
 
-        gameObject.transform.position = NavMeshSurface.transform.position;
+        gameObject.transform.position = new Vector3(0, 0, 0);
         NavMeshAgent.Warp(GetRandomPositionInNavMeshSurface());
 
         SetRenderTargetLayerAndSetRenderCameraCullingMask("Police");
@@ -100,12 +100,12 @@ public class PoliceController : PersonController
 
         if (action == PoliceAnimState.Walk)
         {
-            NavMeshAgent.speed = 0.5f;
+            NavMeshAgent.speed = 0.75f;
             policeAnimatorController.Walk();
         }
         else if (action == PoliceAnimState.Jog)
         {
-            NavMeshAgent.speed = 1.0f;
+            NavMeshAgent.speed = 2.0f;
             policeAnimatorController.Jog();
         }
     }

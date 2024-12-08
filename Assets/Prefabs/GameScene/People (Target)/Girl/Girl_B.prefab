@@ -659,7 +659,7 @@ MonoBehaviour:
   IsSelect: 0
   IsPolice: 0
   renderCamera: {fileID: 1896301808657123804}
-  renderTarget: {fileID: 4857766548397172890}
+  renderTarget: {fileID: 7551421839200208176}
 --- !u!114 &6799766026367372986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1239,7 +1239,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!1 &7760605814208924771
 GameObject:

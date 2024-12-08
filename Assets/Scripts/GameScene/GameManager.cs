@@ -1,9 +1,3 @@
-/*
- * TODO: 씬 디자인 및 UI 디자인
- * TODO: 스폰 포인트
- * TODO: TargetController GetRandomPositionInNavMeshSurface 수정 필요
- * TODO: 다른 오브젝트들과 Destination이 겹치는 문제 수정 필요 -> 일정 시간 동안 도달 못하면 취소 시키는 식으로
- */
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -12,7 +6,6 @@ using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.WSA;
 
 public class GameManager : MonoBehaviour
 {

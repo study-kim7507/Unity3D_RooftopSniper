@@ -51,6 +51,10 @@ MonoBehaviour:
   IsBulletCameraActive: 0
   IsPoliceCameraActive: 0
   IsPlayerExposure: 0
+  IsPlayerCaught: 0
+  IsGameCleared: 0
+  IsGameEnded: 0
+  IsGamePaused: 0
   personPrefabs:
   - {fileID: 5966234983525214629, guid: 4e334d5b3e6493b4b9efea4382b5fce4, type: 3}
   - {fileID: 8333575043669232195, guid: 5b9e0d22c13777d46881f7547abb88af, type: 3}
@@ -176,8 +180,13 @@ MonoBehaviour:
   Life: 3
   NumberOfDetections: 0
   RemainingTime: 180
-  Reward: 0
+  TargetKillCount: 0
+  PoliceKillCount: 0
   probabilityOfDetection: 100
   timeIntervalForGenerateNewPeople: 3
   PoliceGoalTransform: {fileID: 0}
   RemainingTimeText: {fileID: 0}
+  Tooltip: {fileID: 0}
+  playerUI: {fileID: 0}
+  gameOverPopupCanvas: {fileID: 0}
+  pauseMenuPopupCanvas: {fileID: 0}

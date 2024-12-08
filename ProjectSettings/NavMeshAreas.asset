@@ -11,11 +11,11 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: Police
+  - name: 
     cost: 1
-  - name: PeopleArea1
+  - name: 
     cost: 1
-  - name: PeopleArea2
+  - name: 
     cost: 1
   - name: 
     cost: 1

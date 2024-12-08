@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Build.Content;
 using UnityEngine;
 
 public class WeaponSniperRifle : MonoBehaviour
@@ -116,12 +115,14 @@ public class WeaponSniperRifle : MonoBehaviour
 
         float maxDistance = bulletSpeed * bulletLifeTime;   // 거리 = 속력 * 시간, 총알이 생성되는 지점에서 최대로 날아갈 수 있는 거리
 
+        LayerMask layerMask = ~(1 << LayerMask.NameToLayer("PlayerBlockWall"));
+
         RaycastHit hit;
         Ray r = mainCamera.ViewportPointToRay(Vector3.one / 2);
 
         Vector3 hitPosition = r.origin + r.direction * maxDistance;
 
-        if (Physics.Raycast(r, out hit, maxDistance))
+        if (Physics.Raycast(r, out hit, maxDistance, layerMask))
         {
             hitPosition = hit.point;
         }
