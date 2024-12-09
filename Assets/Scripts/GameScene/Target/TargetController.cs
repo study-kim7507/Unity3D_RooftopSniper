@@ -1,4 +1,5 @@
 using NUnit.Framework.Constraints;
+using System;
 using System.Collections;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
@@ -10,6 +11,8 @@ public class TargetController : PersonController
 {
     private TargetAnimatorController targetAnimatorController;
     private bool hasArrived = true;
+    private float timeSpent = 0f; // 목적지 도달에 소요된 시간
+    private const float maxTimeToReachDestination = 10f; // 10초
 
     protected override void Awake()
     {
@@ -30,12 +33,25 @@ public class TargetController : PersonController
     private void Update()
     {
         // 도착 여부 확인
-        if (!hasArrived && NavMeshAgent.pathPending == false && NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance)
+        if (!hasArrived && NavMeshAgent.pathPending == false)
         {
-    
-            // 플레이어가 발각되었을 때 플레이어가 경찰을 죽이거나, 플레이어가 경찰에게 잡히기 전까지 계속 도망 다니도록
-            if (GameManager.Instance.IsPlayerExposure) RunAway();
-            else PerformRandomActionIdleOrWalkOrJog();
+            timeSpent += Time.deltaTime; // 경과 시간 증가
+
+            if (NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance)
+            {
+                // 도착한 경우
+                hasArrived = true;
+                timeSpent = 0f; // 시간 초기화
+                if (GameManager.Instance.IsPlayerExposure) RunAway();
+                else PerformRandomActionIdleOrWalkOrJog();
+            }
+            else if (timeSpent >= maxTimeToReachDestination)
+            {
+                // 10초 이상 도착하지 못한 경우
+                if (GameManager.Instance.IsPlayerExposure) RunAway();
+                else PerformRandomActionIdleOrWalkOrJog();
+                timeSpent = 0f; // 시간 초기화
+            }
         }
     }
 
@@ -47,10 +63,9 @@ public class TargetController : PersonController
         renderCamera.SetActive(true);
     }
 
-    
-
     private void RunAway()
     {
+        if (!isAlive) return;
         Vector3 RandomPosition = GetRandomPositionInNavMeshSurface();
         NavMeshAgent.speed = 3.5f;
         NavMeshAgent.SetDestination(RandomPosition);
@@ -67,6 +82,7 @@ public class TargetController : PersonController
         
         if (action == TargetAnimState.Idle)
         {
+            NavMeshAgent.speed = 0.0f;
             targetAnimatorController.Idle();
             hasArrived = true;
         }

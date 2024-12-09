@@ -81,7 +81,6 @@ public class LevelSelectionSceneCanvasController : MonoBehaviour
     public void GameStartButtonPressed()
     {
         SceneTransitioner.Instance.SceneChange(CurrentSelectedLevel.GetComponent<LevelPanel>().SceneName);
-        // SceneManager.LoadScene(CurrentSelectedLevel.GetComponent<LevelPanel>().SceneName);
     }
 }
     

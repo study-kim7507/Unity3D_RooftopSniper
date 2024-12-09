@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,7 +22,8 @@ public abstract class PersonController : MonoBehaviour
     protected GameObject renderTarget;
 
     protected Renderer[] renderers;
-
+    protected bool isAlive = true;
+ 
     protected virtual void Awake()
     {
         renderers = GetComponentsInChildren<Renderer>();
@@ -33,6 +33,7 @@ public abstract class PersonController : MonoBehaviour
 
     public void OnDamaged()
     {
+        isAlive = false;
         if (!IsSelect && !IsPolice)
         {
             // 사라질 때 붉은색 이펙트
@@ -80,11 +81,11 @@ public abstract class PersonController : MonoBehaviour
     {
         for (int i = 0; i < 30; i++)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * 50.0f; // 거리 줄이기
+            Vector3 randomDirection = Random.insideUnitSphere * 125.0f; // 거리 줄이기
             randomDirection += gameObject.transform.position;
 
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(randomDirection, out hit, 75.0f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(randomDirection, out hit, 125.0f, NavMesh.AllAreas))
             {
                 return hit.position;
             }

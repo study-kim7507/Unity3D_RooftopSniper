@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject weapon;
 
-    private float mouseSensitivity = 2.0f;
+    private float mouseSensitivity = 1.0f;
     private RotateToMouse rotateToMouse;                                // 마우스 이동으로 카메라 회전
     private PlayerMovementController playerMovementController;          // 키보드 입력으로 플레이어 이동, 점프 등
     private Status status;                                              // 이동속도 등의 플레이어 정보 

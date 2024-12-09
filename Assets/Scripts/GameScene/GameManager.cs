@@ -63,6 +63,10 @@ public class GameManager : MonoBehaviour
     private float timeIntervalForGenerateNewPeople = 10.0f;
     public Transform PoliceGoalTransform;
 
+    public AudioSource AudioSource;
+    public AudioClip GameBGM;
+    public AudioClip CrowdScream;
+
     [Header("UI")]
     public TMP_Text RemainingTimeText;
     public GameObject Tooltip;
@@ -130,6 +134,8 @@ public class GameManager : MonoBehaviour
         IsGameEnded = true;
         IsGameCleared = false;
 
+        PauseAllSounds();
+
         // 마우스 커서를 보이게
         UnityEngine.Cursor.visible = true;
         UnityEngine.Cursor.lockState = CursorLockMode.Confined;
@@ -144,6 +150,7 @@ public class GameManager : MonoBehaviour
     public void GamePause()
     {
         IsGamePaused = true;
+        PauseAllSounds();
 
         // 마우스 커서를 보이게
         UnityEngine.Cursor.visible = true;
@@ -165,6 +172,7 @@ public class GameManager : MonoBehaviour
         }
 
         IsGamePaused = false;
+        UnPauseAllSounds();
 
         // 마우스 커서를 보이지 않게
         UnityEngine.Cursor.visible = false;
@@ -175,6 +183,30 @@ public class GameManager : MonoBehaviour
 
         pauseMenuPopupCanvas.SetActive(false);
         playerUI.SetActive(true);
+    }
+
+    private void PauseAllSounds()
+    {
+        // 모든 AudioSource를 찾습니다.
+        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
+
+        // 각 AudioSource를 일시 중지합니다.
+        foreach (AudioSource audioSource in audioSources)
+        {
+            audioSource.Pause();
+        }
+    }
+
+    public void UnPauseAllSounds()
+    {
+        // 모든 AudioSource를 찾습니다.
+        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
+
+        // 각 AudioSource를 다시 재생합니다.
+        foreach (AudioSource audioSource in audioSources)
+        {
+            audioSource.UnPause();
+        }
     }
 
     // 게임 시작 후 초기 타겟 설정 및 아무런 사람이 없을 때 지속적으로 확인하여 새로운 사람이 등장하면 타겟으로 설정
@@ -316,6 +348,7 @@ public class GameManager : MonoBehaviour
                 // 플레이어가 타겟이 아닌 올바르지 못한 곳으로 총알을 발사 했으나, 운이 좋아 발각되지 않음
                 // 플레이어의 카메라를 활성화
                 playerCamera.gameObject.SetActive(true);
+                probabilityOfDetection = Mathf.Clamp(probabilityOfDetection + 5.0f, 0.0f, 100.0f);
             }
         }
     }

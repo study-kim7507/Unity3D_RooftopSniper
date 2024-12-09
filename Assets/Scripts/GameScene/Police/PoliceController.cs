@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.AI;
 using Unity.VisualScripting;
 using static PoliceAnimatorController;
+using System;
 
 public class PoliceController : PersonController
 {
@@ -10,8 +11,15 @@ public class PoliceController : PersonController
     [SerializeField]
     private Mesh policeMesh;
 
+    [Header("Police Arrow")]
+    [SerializeField]
+    private GameObject policeArrow;
+
     private PoliceAnimatorController policeAnimatorController;
     private bool hasArrived = true;
+    private AudioSource audioSource;
+    private float timeSpent = 0f; // 목적지 도달에 소요된 시간
+    private const float maxTimeToReachDestination = 10f; // 10초
 
     protected override void Awake()
     {
@@ -34,10 +42,25 @@ public class PoliceController : PersonController
     private void Update()
     {
         // 도착 여부 확인
-        if (!hasArrived && NavMeshAgent.pathPending == false && NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance)
+        if (!hasArrived && NavMeshAgent.pathPending == false)
         {
-            hasArrived = true;
-            Patrol();
+            timeSpent += Time.deltaTime; // 경과 시간 증가
+
+            if (NavMeshAgent.remainingDistance <= NavMeshAgent.stoppingDistance)
+            {
+                // 도착한 경우
+                hasArrived = true;
+                timeSpent = 0f; // 시간 초기화
+                if (GameManager.Instance.IsPlayerExposure) ChasePlayer();
+                else Patrol();
+            }
+            else if (timeSpent >= maxTimeToReachDestination)
+            {
+                // 10초 이상 도착하지 못한 경우
+                if (GameManager.Instance.IsPlayerExposure) ChasePlayer();
+                else Patrol();
+                timeSpent = 0f; // 시간 초기화
+            }
         }
     }
 
@@ -81,6 +104,18 @@ public class PoliceController : PersonController
 
     private void ChasePlayer()
     {
+        if (!isAlive) return;
+
+        // 사이렌 재생
+        audioSource = GetComponent<AudioSource>();
+        audioSource.Play();
+
+        // 배경음악 변경
+        GameManager.Instance.AudioSource.resource = GameManager.Instance.CrowdScream;
+        GameManager.Instance.AudioSource.volume = 0.3f;
+        GameManager.Instance.AudioSource.Play();
+
+        policeArrow.gameObject.SetActive(true);
         Vector3 destination = new Vector3(GameManager.Instance.PoliceGoalTransform.position.x, gameObject.transform.position.y, GameManager.Instance.PoliceGoalTransform.position.z);
         NavMeshAgent.speed = 3.0f;
         NavMeshAgent.SetDestination(destination);
@@ -112,6 +147,11 @@ public class PoliceController : PersonController
 
     private void OnDestroy()
     {
+        // 배경음악 변경
+        GameManager.Instance.AudioSource.resource = GameManager.Instance.GameBGM;
+        GameManager.Instance.AudioSource.volume = 0.5f;
+        GameManager.Instance.AudioSource.Play();
+
         GameManager.PoliceChasePlayer -= ChasePlayer;
         GameManager.Instance.IsPlayerExposure = false;
         GameManager.Instance.IsPlayerCaught = false;

@@ -15,6 +15,15 @@ public class LifeDisplayer : MonoBehaviour
         canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.alpha = 1.0f;
         previousLifeCount = GameManager.Instance.Life;
+
+        for (int i = 0; i < LifeImages.Count; i++)
+        {
+            if (i < GameManager.Instance.Life)
+                LifeImages[i].SetActive(true);
+            else
+                LifeImages[i].SetActive(false);
+        }
+
     }
 
     private void Update()

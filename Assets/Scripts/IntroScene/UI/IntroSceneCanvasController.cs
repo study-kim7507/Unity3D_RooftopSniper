@@ -7,7 +7,9 @@ public class IntroSceneCanvasController : MonoBehaviour
     [SerializeField]
     private GameObject mainPopup;
     [SerializeField]
-    private GameObject gameDescriptionPopup;
+    private GameObject gameDescriptionPopup1;
+    [SerializeField] 
+    private GameObject gameDescriptionPopup2;  
     [SerializeField]
     private GameObject shortcutKeysDescriptionPopup;
 
@@ -21,8 +23,10 @@ public class IntroSceneCanvasController : MonoBehaviour
 
     private void ShowMainPopup()
     {
-        if (gameDescriptionPopup.activeSelf)
-            StartCoroutine(ChangePopupWithFadeInOut(gameDescriptionPopup, mainPopup));
+        if (gameDescriptionPopup1.activeSelf)
+            StartCoroutine(ChangePopupWithFadeInOut(gameDescriptionPopup1, mainPopup));
+        else if (gameDescriptionPopup2.activeSelf)
+            StartCoroutine(ChangePopupWithFadeInOut(gameDescriptionPopup2, mainPopup));
         else if (shortcutKeysDescriptionPopup.activeSelf)
             StartCoroutine(ChangePopupWithFadeInOut(shortcutKeysDescriptionPopup, mainPopup));
     }
@@ -36,7 +40,7 @@ public class IntroSceneCanvasController : MonoBehaviour
     public void ShowGameDescriptionButtonPressed()
     {
         // 게임 설명 보기
-        StartCoroutine(ChangePopupWithFadeInOut(mainPopup, gameDescriptionPopup));
+        StartCoroutine(ChangePopupWithFadeInOut(mainPopup, gameDescriptionPopup1));
     }
 
     public void ShowShortcutKeysDescriptionButtonPressed()
@@ -98,5 +102,12 @@ public class IntroSceneCanvasController : MonoBehaviour
         canvasGroup.blocksRaycasts = true;
     }
 
-    
+    public void GameDescriptionPopupNextButton()
+    {
+        StartCoroutine(ChangePopupWithFadeInOut(gameDescriptionPopup1, gameDescriptionPopup2));
+    }
+    public void GameDescriptionPopupPrevButton()
+    {
+        StartCoroutine(ChangePopupWithFadeInOut(gameDescriptionPopup2, gameDescriptionPopup1));
+    }
 }
