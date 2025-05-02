@@ -18,6 +18,8 @@
 > 📄 [프로젝트 계획서](https://github.com/study-kim7507/Unity3D_RooftopSniper/blob/main/plan.pdf)  
 > 📄 [프로젝트 소개 (개인 포트폴리오)](https://github.com/study-kim7507/Unity3D_RooftopSniper/blob/main/introduction.pdf)
 
+> ⚠️ **유료 애셋이 포함되어 있어, 스크립트를 제외한 모든 애셋은 레포지토리에서 제외하였습니다.**
+
 <br>
 
 ## 🔧 개발 환경
